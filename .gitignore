@@ -1,0 +1,27 @@
+# Videos and large files
+encoded_videos/
+raw_videos/
+*.y4m
+*.mp4
+*.webm
+
+# LaTeX build files
+latex/*.aux
+latex/*.fdb_latexmk
+latex/*.fls
+latex/*.log
+latex/*.out
+latex/*.toc
+latex/*.synctex.gz
+latex/*.bbl
+latex/*.blg
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+GEMINI.md
