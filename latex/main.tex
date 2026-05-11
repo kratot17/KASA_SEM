@@ -100,22 +100,21 @@ Pro vyhodnocení dopadu ztrátové komprese využíváme tři základní metriky
 Analýza výkonnosti kodérů se neopírá pouze o obrazovou kvalitu, ale i o analytické metriky odvozené z velikosti souborů a času zpracování. 
 
 \textbf{Kompresní poměr (Compression Ratio - CR)} definuje poměr mezi původní nekomprimovanou velikostí dat ($S_{orig}$) a velikostí zkomprimovaného souboru ($S_{comp}$):
-\begin{equation}
+\begin{equation*}
     CR = \frac{S_{orig}}{S_{comp}}
-\end{equation}
+\end{equation*}
 
 \textbf{Bits Per Pixel (BPP)} je metrika nezávislá na rozlišení určující průměrný počet bitů alokovaných na jeden pixel obrazu, kde $R$ je datový tok, $W$ šířka, $H$ výška a $FPS$ snímková frekvence:
-\begin{equation}
+\begin{equation*}
     BPP = \frac{R}{W \times H \times FPS}
-\end{equation}
+\end{equation*}
 
 \textbf{Rychlost kódování v FPS} poskytuje přesnější údaj o výpočetní propustnosti kodéru než prostý časový údaj, zejména při porovnávání různě dlouhých videí:
-\begin{equation}
+\begin{equation*}
     FPS_{enc} = \frac{N_{frames}}{t_{enc}}
-\end{equation}
+\end{equation*}
 
 \section{Metodika práce}
-\label{sec:postup}
 
 \subsection*{Příprava pracovního prostředí a filozofie testování}
 Proces testování byl proveden lokálně na jednom stroji: Apple MacBook Pro osazený čipem M1 Pro. Během celého procesu kódování a výpočtu metrik byl počítač trvale připojen k napájecímu zdroji, aby se předešlo jakémukoli podtaktování či omezení výkonu.
@@ -133,6 +132,8 @@ Jako referenční bod byla stažena nekomprimovaná videa z databáze Xiph.org \
 
 \begin{table}[H]
 \centering
+\caption{Naměřená prostorová entropie referenčních video sekvencí.}
+\label{tab:entropy}
 \begin{tabular}{|l|c|c|c|}
 \hline
 \textbf{Testovací sekvence} & \textbf{Prům. entropie [bit/px]} & \textbf{Min} & \textbf{Max} \\
@@ -142,8 +143,6 @@ old\_town\_cross\_1080p50.y4m & 7,1095 & 6,9841 & 7,2354 \\
 park\_joy\_1080p50.y4m & 6,9707 & 6,8512 & 7,0921 \\
 \hline
 \end{tabular}
-\caption{Naměřená prostorová entropie referenčních video sekvencí.}
-\label{tab:entropy}
 \end{table}
 
 \subsection*{Dávkové zpracování (FFmpeg)}
@@ -158,6 +157,8 @@ Zatímco hardwarový kodér \texttt{hevc\_videotoolbox} dosahuje extrémní prop
 
 \begin{table}[H]
 \centering
+\caption{Srovnání výkonnosti kodérů pro vysokou kvalitu obrazu (vstup: 500 snímků, 1080p50, sekvence crowd\_run).}
+\label{tab:casy}
 \begin{tabular}{|l|c|c|c|r|}
 \hline
 \textbf{Kodér (výpočetní uzel)} & \textbf{Nastavení} & \textbf{Propustnost [FPS]} & \textbf{Čas [s]} & \textbf{Velikost [MB]} \\
@@ -169,8 +170,6 @@ libsvtav1 (CPU) & CRF 22 & 41,67 & 12 & 105,37 \\
 libvpx-vp9 (CPU) & CRF 22 & 4,81 & 104 & 120,83 \\
 \hline
 \end{tabular}
-\caption{Srovnání výkonnosti kodérů pro vysokou kvalitu obrazu (vstup: 500 snímků, 1080p50, sekvence crowd\_run).}
-\label{tab:casy}
 \end{table}
 
 \subsection*{Analýza objektivity R-D křivek}
@@ -200,7 +199,7 @@ Kromě průměrných hodnot jsme zkoumali i stabilitu kvality v čase. Jak ukazu
 Křivky pro další testovací sekvence vykazují analogický trend, kompletní sady naměřených křivek (PSNR, SSIM, VMAF pro všechny testovací sekvence) jsou z důvodu rozsahu přesunuty do Přílohy na konci dokumentu.
 
 \section{Závěr}
-Experimentálně se potvrdilo, že kompresní efektivita úzce souvisí se zvoleným standardem a optimalizací kodéru. Formáty nové generace (HEVC a AV1) bezpečně překonávají dlouholetý standard H.264 z pohledu úspory dat při zachování percepční kvality. Z hlediska metriky BD-Rate vykazuje AV1 (\texttt{libsvtav1}) průměrně o 15--20\ \% nižší datový tok pro dosažení stejného VMAF skóre jako HEVC (\texttt{libx265}) v oblastech s vysokou kvalitou. Hardwarová akcelerace sice naprosto dominuje v rychlosti kódování, nicméně aktuální architektura dedikovaných enginů (Apple M1) postrádá analytickou hloubku softwarových kodérů, což vede k výrazně nižšímu kompresnímu poměru a objemnějším souborům (nárůst bitrate o více než 300\ \% vůči softwarovému HEVC).
+Experimentálně se potvrdilo, že kompresní efektivita úzce souvisí se zvoleným standardem a optimalizací kodéru. Formáty nové generace (HEVC a AV1) bezpečně překonávají dlouholetý standard H.264 z pohledu úspory dat při zachování percepční kvality. Z hlediska metriky BD-Rate vykazuje AV1 (\texttt{libsvtav1}) průměrně o 15--20\ \% nižší datový tok pro dosažení stejného VMAF skóre jako HEVC (\texttt{libx265}) v oblastech s vysokou kvalitou. Hardwarová akcelerace sice naprosto dominuje v rychlosti kódování, nicméně aktuální architektura dedikovaných enginů (Apple M1 Pro) postrádá analytickou hloubku softwarových kodérů, což vede k výrazně nižšímu kompresnímu poměru a objemnějším souborům (nárůst bitrate o více než 300\ \% vůči softwarovému HEVC).
 
 \newpage
 \section*{Slovník pojmů}
