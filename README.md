@@ -13,7 +13,7 @@ Tento repozitář obsahuje semestrální projekt pro předmět **B(E)2M37KASA (K
 
 ## 💾 Externí úložiště objemných dat (Google Drive)
 
-Z důvodu enormní velikosti (desítky GB) **nejsou** v tomto repozitáři uložena nekomprimovaná referenční videa ani samotné překódované výstupy.
+Z důvodu své velikosti (několik GB) **nejsou** v tomto repozitáři uložena nekomprimovaná referenční videa ani samotné překódované výstupy.
 
 Tyto složky (`raw_videos/` a `encoded_videos/`) jsou veřejně dostupné na **Google Drive**:
 🔗 **[Odkaz na Google Drive úložiště](https://drive.google.com/drive/folders/1dQosNQVMNARsGfBLjNj08zZU0Cm_nrx5?usp=sharing)**
