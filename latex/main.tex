@@ -40,14 +40,14 @@
 \maketitle
 
 \begin{abstract}
-Tento semestrální projekt se zabývá analýzou a~srovnáním vlastností moderních standardů pro kompresi videa (\hyperref[sec:standards]{HEVC}, \hyperref[sec:standards]{AVC}, \hyperref[sec:standards]{VP9}, \hyperref[sec:standards]{AV1}) pomocí nástroje FFmpeg. Na standardizovaných testovacích sekvencích v~rozlišení 1080p50 je hodnocena efektivita komprese pomocí metrik \hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM} a~\hyperref[sec:metrics]{VMAF} v~závislosti na datovém toku a~výpočetní náročnosti. Výsledky ukazují, že moderní kodéry jako libx265 a~libsvtav1 dosahují výrazné úspory datového toku oproti staršímu standardu \hyperref[sec:standards]{AVC}, zatímco hardwarová akcelerace na architektuře Apple Silicon nabízí extrémní propustnost (přes 160 \hyperref[sec:derived_metrics]{FPS}) za cenu nárůstu datového toku o~více než 300\ \% pro dosažení shodné percepční kvality.
+Semestrální projekt se zabývá analýzou a~srovnáním vlastností standardů pro kompresi videa (\hyperref[sec:standards]{HEVC}, \hyperref[sec:standards]{AVC}, \hyperref[sec:standards]{VP9} a \hyperref[sec:standards]{AV1}) pomocí nástroje FFmpeg. Na standardizovaných testovacích sekvencích v~rozlišení 1080p50 je hodnocena efektivita komprese pomocí metrik \hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM} a~\hyperref[sec:metrics]{VMAF} v~závislosti na datovém toku a~výpočetní náročnosti. Výsledky ukazují, že moderní kodéry jako libx265 a~libsvtav1 dosahují výrazné úspory datového toku oproti staršímu standardu \hyperref[sec:standards]{AVC}, zatímco hardwarová akcelerace na architektuře Apple Silicon nabízí extrémní propustnost (přes 160 \hyperref[sec:derived_metrics]{FPS}) za cenu nárůstu datového toku o~více než 300\ \% pro dosažení shodné percepční kvality.
 \end{abstract}
 
 \tableofcontents
 \newpage
 
 \section{Úvod}
-S~neustálým růstem objemu multimediálních dat na internetu roste i~tlak na efektivitu metod komprese obrazu a~videa. Tento projekt se zaměřuje na praktické srovnání vybraných moderních videokodeků. Důraz je kladen na standard High Efficiency Video Coding (\hyperref[sec:standards]{HEVC}), známý též jako H.265, a~jeho pozici vůči staršímu standardu Advanced Video Coding (\hyperref[sec:standards]{AVC}, H.264) a~moderním alternativám \hyperref[sec:standards]{VP9} a~\hyperref[sec:standards]{AV1}. Cílem práce je demonstrovat vlastnosti těchto kodeků pomocí softwaru FFmpeg, detailně popsat jejich kompresní efektivitu a~analyzovat vliv použitého hardwaru na výsledný poměr kvality a~datového toku. Veškeré měřicí skripty, vygenerovaná data a~zdrojové kódy tohoto dokumentu jsou veřejně dostupné v~repozitáři na platformě GitHub \href{https://github.com/kratot17/KASA_SEM}{(kratot17/KASA\_SEM)}. Složky s~objemnými daty, konkrétně nekomprimovaná referenční videa (\texttt{raw\_videos}) a~vygenerované výstupy z~kodérů (\texttt{encoded\_videos}), jsou z~kapacitních důvodů uloženy v~dedikované složce na \href{https://drive.google.com/drive/folders/1dQosNQVMNARsGfBLjNj08zZU0Cm_nrx5?usp=sharing}{Google Drive}.
+S~neustálým růstem objemu multimediálních dat na internetu roste i~tlak na efektivitu metod komprese obrazu a~videa. Tento projekt se zaměřuje na praktické srovnání vybraných moderních videokodeků. Důraz je kladen na standard High Efficiency Video Coding (\hyperref[sec:standards]{HEVC}), známý též jako H.265, a~jeho pozici vůči staršímu standardu Advanced Video Coding (\hyperref[sec:standards]{AVC}, H.264) a~moderním alternativám \hyperref[sec:standards]{VP9} a~\hyperref[sec:standards]{AV1}. Cílem práce je demonstrovat vlastnosti těchto kodeků pomocí nástroje FFmpeg, detailně popsat jejich kompresní efektivitu a~analyzovat vliv použitého hardwaru na výsledný poměr kvality a~datového toku. Veškeré měřicí skripty, vygenerovaná data a~zdrojové kódy tohoto dokumentu jsou veřejně dostupné v~repozitáři na platformě GitHub \href{https://github.com/kratot17/KASA_SEM}{(kratot17/KASA\_SEM)}. Složky s~objemnými daty, konkrétně nekomprimovaná referenční videa (\texttt{raw\_videos}) a~vygenerované výstupy z~kodérů (\texttt{encoded\_videos}), jsou z~kapacitních důvodů uloženy v~dedikované složce na \href{https://drive.google.com/drive/folders/1dQosNQVMNARsGfBLjNj08zZU0Cm_nrx5?usp=sharing}{Google Drive}.
 
 \section{Teoretický základ}
 \subsection*{Paradigma standardizace videa: Dekodér vs. Kodér}
@@ -77,16 +77,16 @@ Použité konfigurace:
 
 \begin{lstlisting}[language=bash, caption={Příklad příkazu pro kódování do \hyperref[sec:standards]{HEVC} (CPU vs. HW).}]
 # Softwarové kódování (libx265)
-ffmpeg -y -i~input.y4m -c:v~libx265 -preset medium -crf 28 output_cpu.mp4
+ffmpeg -y -i input.y4m -c:v libx265 -preset medium -crf 28 output_cpu.mp4
 
 # Hardwarově akcelerované kódování (Apple Silicon)
-ffmpeg -y -i~input.y4m -c:v~hevc_videotoolbox -q:v~72 output_hw.mp4
+ffmpeg -y -i input.y4m -c:v hevc_videotoolbox -q:v 72 output_hw.mp4
 \end{lstlisting}
 
 Výpočet objektivních metrik byl realizován pomocí komplexního filtru (\texttt{-lavfi}) integrovaného přímo ve FFmpeg, který v~jednom průchodu generuje logy pro PSNR, SSIM a~VMAF.
 
 \begin{lstlisting}[language=bash, caption={Příklad příkazu pro výpočet metrik \hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM} a~\hyperref[sec:metrics]{VMAF}.}]
-ffmpeg -i~encoded.mp4 -i~reference.y4m -lavfi "[0:v][1:v]psnr=stats_file=psnr.log;[0:v][1:v]ssim=stats_file=ssim.log;[0:v][1:v]libvmaf=n_threads=8:log_path=vmaf.csv:log_fmt=csv" -f null -
+ffmpeg -i encoded.mp4 -i reference.y4m -lavfi "[0:v][1:v]psnr=stats_file=psnr.log;[0:v][1:v]ssim=stats_file=ssim.log;[0:v][1:v]libvmaf=n_threads=8:log_path=vmaf.csv:log_fmt=csv" -f null -
 \end{lstlisting}
 
 \subsection*{Metriky objektivní kvality videa}
@@ -173,12 +173,12 @@ park\_joy\_1080p50.y4m & 6,9707 & 6,8512 & 7,0921 \\
 \end{table}
 
 \subsection*{Dávkové zpracování (FFmpeg)}
-Pomocí skriptu byl aplikován software FFmpeg \cite{ffmpeg}. Úroveň kvality byla řízena pomocí parametru \hyperref[sec:glossary]{CRF} (pro softwarové kodéry) a~parametru \texttt{q:v} (pro HW). Testovány byly kompromisní stupně kvality s~ohledem na odlišné implementace škálování. 
+Pomocí skriptu byl spuštěn FFmpeg \cite{ffmpeg}. Úroveň kvality byla řízena pomocí parametru \hyperref[sec:glossary]{CRF} (pro softwarové kodéry) a~parametru \texttt{q:v} (pro HW). Testovány byly kompromisní stupně kvality s~ohledem na odlišné implementace škálování. 
 
 \section{Výsledky a~diskuze}
 
 \subsection*{Výkonnostní srovnání a~vliv HW akcelerace}
-V~této sekci uvádíme detailní srovnání výkonnosti pouze pro sekvenci \textit{crowd\_run}. Tato sekvence byla vybrána jako reprezentativní vzorek, neboť vykazuje nejvyšší prostorovou entropii a~je pro kodéry nejnáročnější. Jak je patrné z~doplňujících tabulek v~Příloze \ref{sec:appendix}, relativní rozdíly v~propustnosti (\hyperref[sec:derived_metrics]{FPS}) a~čase mezi jednotlivými kodéry zůstávají u~ostatních videí velmi podobné a~potvrzují stejné trendy – naprostou dominanci hardwarového řešení v~rychlosti a~vyšší analytickou efektivitu softwarových kodérů.
+V~této sekci uvádíme detailní srovnání výkonnosti pouze pro sekvenci \textit{old\_town\_cross}. Tato sekvence byla vybrána, jelikož se na základě R-D křivek ukázala jako nejnáročnější pro kódování (křivky dlouhodobě nedosahují hodnoty 100 jako u~ostatních videí). Jak je patrné z~doplňujících tabulek v~Příloze \ref{sec:appendix}, relativní rozdíly v~propustnosti (\hyperref[sec:derived_metrics]{FPS}) a~čase mezi jednotlivými kodéry zůstávají u~ostatních videí velmi podobné a~potvrzují stejné trendy – naprostou dominanci hardwarového řešení v~rychlosti a~vyšší analytickou efektivitu softwarových kodérů.
 
 V~Tabulce \ref{tab:times} jsou uvedeny výsledky měření pro scénář s~vysokou vizuální kvalitou (odpovídající nastavení \hyperref[sec:glossary]{CRF} 22). Zde je nejvíce patrný rozdíl mezi softwarovou hloubkou analýzy a~hrubou silou hardwarového enginu.
 
@@ -186,17 +186,17 @@ Zatímco hardwarový kodér \texttt{hevc\_videotoolbox} dosahuje extrémní prop
 
 \begin{table}[H]
 \centering
-\caption{Srovnání výkonnosti kodérů pro vysokou kvalitu obrazu (vstup: 500 snímků, 1080p50, sekvence crowd\_run). Kompletní tabulky pro ostatní sekvence jsou v~Příloze \ref{sec:appendix}.}
+\caption{Srovnání výkonnosti kodérů pro vysokou kvalitu obrazu (vstup: 500 snímků, 1080p50, sekvence old\_town\_cross). Kompletní tabulky pro ostatní sekvence jsou v~Příloze \ref{sec:appendix}.}
 \label{tab:times}
 \begin{tabular}{|l|c|r|r|r|c|}
 \hline
 \textbf{Kodér} & \textbf{\hyperref[sec:derived_metrics]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
-hevc\_videotoolbox (HW) & 166,67 & 3 & 1555,20 & 182,31 & 88,28\ \% \\
-libx264 (CPU) & 62,50 & 8 & 1555,20 & 35,13 & 97,74\ \% \\
-libx265 (CPU) & 25,00 & 20 & 1555,20 & 42,28 & 97,28\ \% \\
-libsvtav1 (CPU) & 41,67 & 12 & 1555,20 & 110,49 & 92,90\ \% \\
-libvpx-vp9 (CPU) & 4,81 & 104 & 1555,20 & 126,70 & 91,85\ \% \\
+hevc\_videotoolbox (HW) & 166,67 & 3 & 1555,20 & 145,33 & 90,66\ \% \\
+libx264 (CPU) & 83,33 & 6 & 1555,20 & 11,11 & 99,29\ \% \\
+libx265 (CPU) & 45,45 & 11 & 1555,20 & 11,75 & 99,24\ \% \\
+libsvtav1 (CPU) & 50,00 & 10 & 1555,20 & 43,51 & 97,20\ \% \\
+libvpx-vp9 (CPU) & 4,10 & 122 & 1555,20 & 92,71 & 94,04\ \% \\
 \hline
 \end{tabular}
 \end{table}
@@ -204,41 +204,41 @@ libvpx-vp9 (CPU) & 4,81 & 104 & 1555,20 & 126,70 & 91,85\ \% \\
 \subsection*{Analýza objektivity R-D křivek}
 Účelem vyhodnocení Rate-Distortion (R-D) křivek je znázornit vztah mezi datovým tokem (zde reprezentovaným velikostí souboru) a~naměřenou kvalitou obrazu. Efektivnější kodér demonstruje strmější křivku, která se posouvá více nahoru a~doleva.
 
-Na Obrázku \ref{fig:rd_vmaf_crowd} je vidět aplikace metriky \hyperref[sec:metrics]{VMAF} na pohybově složitou sekvenci. Potvrzuje se efektivita nejnovějšího standardu \hyperref[sec:standards]{AV1} (\texttt{libsvtav1}). Hardwarový kodér je v~této grafické reprezentaci výrazně posunut vpravo; vyžaduje přibližně čtyřnásobný objem dat k~udržení stejného \hyperref[sec:metrics]{VMAF} skóre jako \texttt{libx265}. 
+Na Obrázku \ref{fig:rd_vmaf_old_town} je vidět aplikace metriky \hyperref[sec:metrics]{VMAF} na pohybově nejsložitější sekvenci. Potvrzuje se efektivita nejnovějšího standardu \hyperref[sec:standards]{AV1} (\texttt{libsvtav1}). Dále je zde velmi zřetelný problém sekvence \textit{old\_town\_cross}, kdy křivky pro kodéry (jako například VP9 a~hardwarový HEVC) ani při vysokých datových tocích nedosahují ideální hranice VMAF 100.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{rd_vmaf_crowd_run_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metrics]{VMAF}) pro sekvenci crowd\_run\_1080p50.}
-    \label{fig:rd_vmaf_crowd}
+    \includegraphics[width=0.8\textwidth]{rd_vmaf_old_town_cross_1080p50.pdf}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{VMAF}) pro sekvenci old\_town\_cross\_1080p50.}
+    \label{fig:rd_vmaf_old_town}
 \end{figure}
 
 \subsection*{Vliv prostorové složitosti a~časová stabilita}
-Z~naměřených výsledků vyplývá přímá úměra mezi prostorovou složitostí (entropií) a~kompresní náročností. Sekvence \textit{crowd\_run}, vykazující nejvyšší entropii (7,45 bit/px), vyžaduje pro dosažení \hyperref[sec:metrics]{VMAF} skóre 95 u~kodéru \texttt{libx265} o~42 \% vyšší datový tok než sekvence \textit{park\_joy} s~nižší entropií (6,97 bit/px). Tímto se experimentálně potvrzuje teoretický předpoklad o~vlivu prostorové redundance (\textit{Spatial Redundancy}) na efektivitu komprese.
+Z~naměřených výsledků vyplývá, že kompresní náročnost nezávisí pouze na prostorové složitosti (entropii), ale také na složitosti pohybu. Sekvence \textit{old\_town\_cross}, přestože nevykazuje absolutně nejvyšší entropii (7,11 bit/px), se ukázala jako nejnáročnější pro kódování. Jak je vidět na chování kodérů, ani při maximální analyzované kvalitě křivky pro některé kodéry nedosahují hranice 100 VMAF. Výsledná náročnost je tedy kombinací jak prostorové redundance, tak časové (pohybové) složitosti scény.
 
 Kromě průměrných hodnot jsme zkoumali i~stabilitu kvality v~čase. V~Tabulce \ref{tab:times_medium} jsou shrnuty průměrné hodnoty pro nastavení nominálně „střední“ kvality (CRF 34 pro softwarové kodéry a~Q 66 pro hardwarový kodér). Jak ukazuje následný Obrázek \ref{fig:temporal_vmaf}, na tomto nastavení se naplno projevuje nekompatibilita škály CRF mezi různými standardy. Zatímco u~\hyperref[sec:standards]{VP9}, \hyperref[sec:standards]{AV1} a~hardwarového \hyperref[sec:standards]{HEVC} představuje tato hodnota stále téměř bezztrátovou kompresi s~obrovským datovým tokem (plochá křivka držící se u~VMAF 100), kodéry \texttt{libx264} a~\texttt{libx265} při CRF 34 již velmi agresivně šetří data. U~nich se kvalita propadá k~hodnotám 60--65 a~na křivce je ostře patrný typický „pilovitý“ průběh (sawtooth pattern), způsobený pravidelným vkládáním kvalitních referenčních (I) snímků, mezi kterými se kvalita predikovaných snímků postupně snižuje.
 
 \begin{table}[H]
 \centering
-\caption{Srovnání výkonnosti kodérů pro střední kvalitu (vstup: 500 snímků, 1080p50, sekvence crowd\_run, CRF 34 / Q 66).}
+\caption{Srovnání výkonnosti kodérů pro střední kvalitu (vstup: 500 snímků, 1080p50, sekvence old\_town\_cross, CRF 34 / Q 66).}
 \label{tab:times_medium}
 \begin{tabular}{|l|c|r|c|c|}
 \hline
 \textbf{Kodér} & \textbf{\hyperref[sec:derived_metrics]{FPS}} & \textbf{Čas [s]} & \textbf{Komprim. [MB]} & \textbf{Průměrné VMAF} \\
 \hline
-hevc\_videotoolbox (HW) & 166,67 & 3 & 76,38 & 99,87 \\
-libx264 (CPU) & 100,00 & 5 & 6,74 & 59,91 \\
-libx265 (CPU) & 50,00 & 10 & 7,00 & 63,55 \\
-libsvtav1 (CPU) & 45,45 & 11 & 42,41 & 98,67 \\
-libvpx-vp9 (CPU) & 7,35 & 68 & 49,97 & 98,66 \\
+hevc\_videotoolbox (HW) & 166,67 & 3 & 26,23 & 94,19 \\
+libx264 (CPU) & 166,67 & 3 & 1,34 & 68,05 \\
+libx265 (CPU) & 83,33 & 6 & 0,81 & 71,37 \\
+libsvtav1 (CPU) & 83,33 & 6 & 3,41 & 95,37 \\
+libvpx-vp9 (CPU) & 9,26 & 54 & 11,60 & 92,97 \\
 \hline
 \end{tabular}
 \end{table}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{per_frame_vmaf_crowd_run_1080p50.pdf}
-    \caption{Časový průběh \hyperref[sec:metrics]{VMAF} pro sekvenci crowd\_run (střední kvalita).}
+    \includegraphics[width=0.85\textwidth]{per_frame_vmaf_old_town_cross_1080p50.pdf}
+    \caption{Časový průběh \hyperref[sec:metrics]{VMAF} pro sekvenci old\_town\_cross (střední kvalita).}
     \label{fig:temporal_vmaf}
 \end{figure}
 
@@ -310,16 +310,16 @@ V~této sekci jsou uvedeny tabulky výkonnosti pro zbývající testovací sekve
 
 \begin{table}[H]
 \centering
-\caption{Srovnání výkonnosti kodérů (vstup: 500 snímků, 1080p50, sekvence old\_town\_cross).}
+\caption{Srovnání výkonnosti kodérů (vstup: 500 snímků, 1080p50, sekvence crowd\_run).}
 \begin{tabular}{|l|c|r|r|r|c|}
 \hline
 \textbf{Kodér} & \textbf{\hyperref[sec:derived_metrics]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
-hevc\_videotoolbox (HW) & 166,67 & 3 & 1555,20 & 145,33 & 90,66\ \% \\
-libx264 (CPU) & 83,33 & 6 & 1555,20 & 11,11 & 99,29\ \% \\
-libx265 (CPU) & 45,45 & 11 & 1555,20 & 11,75 & 99,24\ \% \\
-libsvtav1 (CPU) & 50,00 & 10 & 1555,20 & 43,51 & 97,20\ \% \\
-libvpx-vp9 (CPU) & 4,10 & 122 & 1555,20 & 92,71 & 94,04\ \% \\
+hevc\_videotoolbox (HW) & 166,67 & 3 & 1555,20 & 182,31 & 88,28\ \% \\
+libx264 (CPU) & 62,50 & 8 & 1555,20 & 35,13 & 97,74\ \% \\
+libx265 (CPU) & 25,00 & 20 & 1555,20 & 42,28 & 97,28\ \% \\
+libsvtav1 (CPU) & 41,67 & 12 & 1555,20 & 110,49 & 92,90\ \% \\
+libvpx-vp9 (CPU) & 4,81 & 104 & 1555,20 & 126,70 & 91,85\ \% \\
 \hline
 \end{tabular}
 \end{table}
@@ -346,8 +346,8 @@ Zbývající grafy ukazují stabilitu vizuální kvality snímek po snímku při
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{per_frame_vmaf_old_town_cross_1080p50.pdf}
-    \caption{Časový průběh \hyperref[sec:metrics]{VMAF}: old\_town\_cross\_1080p50.}
+    \includegraphics[width=0.85\textwidth]{per_frame_vmaf_crowd_run_1080p50.pdf}
+    \caption{Časový průběh \hyperref[sec:metrics]{VMAF}: crowd\_run\_1080p50.}
 \end{figure}
 
 \begin{figure}[H]
@@ -410,8 +410,8 @@ Kompletní sada naměřených RD křivek pro metriky \hyperref[sec:metrics]{PSNR
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{rd_vmaf_old_town_cross_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metrics]{VMAF}) pro sekvenci old\_town\_cross\_1080p50.}
+    \includegraphics[width=0.75\textwidth]{rd_vmaf_crowd_run_1080p50.pdf}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{VMAF}) pro sekvenci crowd\_run\_1080p50.}
 \end{figure}
 
 \end{document}
