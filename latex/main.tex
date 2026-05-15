@@ -130,7 +130,7 @@ Jako referenční bod byla stažena nekomprimovaná videa z~databáze Xiph.org \
 \begin{itemize}
     \item \textbf{Formát a~prostor:} \hyperref[sec:glossary]{Y4M} (YUV4MPEG2), bez komprese. Barevný prostor \hyperref[sec:glossary]{YUV 4:2:0}, 8-bit.
     \item \textbf{Rozlišení a~frekvence:} 1920x1080 (Full HD) při 50 snímcích za sekundu (fps).
-    \item \textbf{Objem dat a~kompresní poměr:} Všechna referenční videa mají délku 10 sekund (500 snímků). Vzhledem k~absenci komprese je jejich velikost na disku přesně identická, a~to \textbf{1~555~203~036 bajtů} (cca 1483,16 MB).
+    \item \textbf{Objem dat a~kompresní poměr:} Všechna referenční videa mají délku 10 sekund (500 snímků). Vzhledem k~absenci komprese je jejich velikost na disku přesně identická, a~to \textbf{1~555~203~036 bajtů} (cca 1555,20 MB).
     \item \textbf{Prostorová složitost:} Pro objektivní zhodnocení náročnosti jednotlivých scén byla změřena průměrná Shannonova entropie jasové složky (Y) všech snímků referenčních videí (viz Tabulka \ref{tab:entropy}). Tato hodnota indikuje míru prostorové redundance (\textit{Spatial Redundancy}) v~sekvenci, kterou se kodéry snaží eliminovat \cite{lec_tech}.
 \end{itemize}
 
@@ -192,11 +192,11 @@ Zatímco hardwarový kodér \texttt{hevc\_videotoolbox} dosahuje extrémní prop
 \hline
 \textbf{Kodér} & \textbf{\hyperref[sec:derived_metrics]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
-hevc\_videotoolbox (HW) & 166,67 & 3 & 1483,16 & 173,86 & 88,28\ \% \\
-libx264 (CPU) & 62,50 & 8 & 1483,16 & 33,51 & 97,74\ \% \\
-libx265 (CPU) & 25,00 & 20 & 1483,16 & 40,32 & 97,28\ \% \\
-libsvtav1 (CPU) & 41,67 & 12 & 1483,16 & 105,37 & 92,90\ \% \\
-libvpx-vp9 (CPU) & 4,81 & 104 & 1483,16 & 120,83 & 91,85\ \% \\
+hevc\_videotoolbox (HW) & 166,67 & 3 & 1555,20 & 182,31 & 88,28\ \% \\
+libx264 (CPU) & 62,50 & 8 & 1555,20 & 35,13 & 97,74\ \% \\
+libx265 (CPU) & 25,00 & 20 & 1555,20 & 42,28 & 97,28\ \% \\
+libsvtav1 (CPU) & 41,67 & 12 & 1555,20 & 110,48 & 92,90\ \% \\
+libvpx-vp9 (CPU) & 4,81 & 104 & 1555,20 & 126,70 & 91,85\ \% \\
 \hline
 \end{tabular}
 \end{table}
@@ -292,11 +292,11 @@ V~této sekci jsou uvedeny tabulky výkonnosti pro zbývající testovací sekve
 \hline
 \textbf{Kodér} & \textbf{\hyperref[sec:derived_metrics]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
-hevc\_videotoolbox (HW) & 166,67 & 3 & 1483,16 & 138,59 & 90,66\ \% \\
-libx264 (CPU) & 83,33 & 6 & 1483,16 & 10,60 & 99,29\ \% \\
-libx265 (CPU) & 45,45 & 11 & 1483,16 & 11,20 & 99,24\ \% \\
-libsvtav1 (CPU) & 50,00 & 10 & 1483,16 & 41,49 & 97,20\ \% \\
-libvpx-vp9 (CPU) & 4,10 & 122 & 1483,16 & 88,41 & 94,04\ \% \\
+hevc\_videotoolbox (HW) & 166,67 & 3 & 1555,20 & 145,33 & 90,66\ \% \\
+libx264 (CPU) & 83,33 & 6 & 1555,20 & 11,11 & 99,29\ \% \\
+libx265 (CPU) & 45,45 & 11 & 1555,20 & 11,75 & 99,24\ \% \\
+libsvtav1 (CPU) & 50,00 & 10 & 1555,20 & 43,50 & 97,20\ \% \\
+libvpx-vp9 (CPU) & 4,10 & 122 & 1555,20 & 92,70 & 94,04\ \% \\
 \hline
 \end{tabular}
 \end{table}
@@ -308,11 +308,11 @@ libvpx-vp9 (CPU) & 4,10 & 122 & 1483,16 & 88,41 & 94,04\ \% \\
 \hline
 \textbf{Kodér} & \textbf{\hyperref[sec:derived_metrics]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
-hevc\_videotoolbox (HW) & 166,67 & 3 & 1483,16 & 215,85 & 85,45\ \% \\
-libx264 (CPU) & 71,43 & 7 & 1483,16 & 41,92 & 97,17\ \% \\
-libx265 (CPU) & 22,73 & 22 & 1483,16 & 52,92 & 96,43\ \% \\
-libsvtav1 (CPU) & 45,45 & 11 & 1483,16 & 128,33 & 91,35\ \% \\
-libvpx-vp9 (CPU) & 4,72 & 106 & 1483,16 & 154,42 & 89,59\ \% \\
+hevc\_videotoolbox (HW) & 166,67 & 3 & 1555,20 & 226,33 & 85,45\ \% \\
+libx264 (CPU) & 71,43 & 7 & 1555,20 & 43,95 & 97,17\ \% \\
+libx265 (CPU) & 22,73 & 22 & 1555,20 & 55,49 & 96,43\ \% \\
+libsvtav1 (CPU) & 45,45 & 11 & 1555,20 & 134,57 & 91,35\ \% \\
+libvpx-vp9 (CPU) & 4,72 & 106 & 1555,20 & 161,92 & 89,59\ \% \\
 \hline
 \end{tabular}
 \end{table}
