@@ -77,16 +77,16 @@ Použité konfigurace:
 
 \begin{lstlisting}[language=bash, caption={Příklad příkazu pro kódování do \hyperref[sec:standards]{HEVC} (CPU vs. HW).}]
 # Softwarové kódování (libx265)
-ffmpeg -i~input.y4m -c:v~libx265 -crf 28 -preset medium output_cpu.mp4
+ffmpeg -y -i~input.y4m -c:v~libx265 -preset medium -crf 28 output_cpu.mp4
 
 # Hardwarově akcelerované kódování (Apple Silicon)
-ffmpeg -i~input.y4m -c:v~hevc_videotoolbox -q:v~66 output_hw.mp4
+ffmpeg -y -i~input.y4m -c:v~hevc_videotoolbox -q:v~72 output_hw.mp4
 \end{lstlisting}
 
-Výpočet objektivních metrik byl realizován pomocí filtru \texttt{libvmaf} integrovaného přímo ve FFmpeg, což eliminuje chyby vzniklé při externím zpracování souborů.
+Výpočet objektivních metrik byl realizován pomocí komplexního filtru (\texttt{-lavfi}) integrovaného přímo ve FFmpeg, který v~jednom průchodu generuje logy pro PSNR, SSIM a~VMAF, což eliminuje chyby vzniklé při externím zpracování souborů a~šetří strojový čas.
 
 \begin{lstlisting}[language=bash, caption={Příklad příkazu pro výpočet metrik \hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM} a~\hyperref[sec:metrics]{VMAF}.}]
-ffmpeg -i~encoded.mp4 -i~reference.y4m -filter_complex "libvmaf=model_path=vmaf_v0.6.1.json:psnr=1:ssim=1" -f null -
+ffmpeg -i~encoded.mp4 -i~reference.y4m -lavfi "[0:v][1:v]psnr=stats_file=psnr.log;[0:v][1:v]ssim=stats_file=ssim.log;[0:v][1:v]libvmaf=n_threads=8:log_path=vmaf.csv:log_fmt=csv" -f null -
 \end{lstlisting}
 
 \subsection*{Metriky objektivní kvality videa}
@@ -130,7 +130,7 @@ Jako referenční bod byla stažena nekomprimovaná videa z~databáze Xiph.org \
 \begin{itemize}
     \item \textbf{Formát a~prostor:} \hyperref[sec:glossary]{Y4M} (YUV4MPEG2), bez komprese. Barevný prostor \hyperref[sec:glossary]{YUV 4:2:0}, 8-bit.
     \item \textbf{Rozlišení a~frekvence:} 1920x1080 (Full HD) při 50 snímcích za sekundu (fps).
-    \item \textbf{Objem dat a~kompresní poměr:} Všechna referenční videa mají délku 10 sekund (500 snímků). Vzhledem k~absenci komprese je jejich velikost na disku přesně identická, \\ a~to \textbf{1~555~203~036 bajtů} (cca 1483,16 MB).
+    \item \textbf{Objem dat a~kompresní poměr:} Všechna referenční videa mají délku 10 sekund (500 snímků). Vzhledem k~absenci komprese je jejich velikost na disku přesně identická, a~to \textbf{1~555~203~036 bajtů} (cca 1483,16 MB).
     \item \textbf{Prostorová složitost:} Pro objektivní zhodnocení náročnosti jednotlivých scén byla změřena průměrná Shannonova entropie jasové složky (Y) všech snímků referenčních videí (viz Tabulka \ref{tab:entropy}). Tato hodnota indikuje míru prostorové redundance (\textit{Spatial Redundancy}) v~sekvenci, kterou se kodéry snaží eliminovat \cite{lec_tech}.
 \end{itemize}
 
