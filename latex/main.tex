@@ -161,15 +161,15 @@ Zatímco hardwarový kodér \texttt{hevc\_videotoolbox} dosahuje extrémní prop
 \centering
 \caption{Srovnání výkonnosti kodérů pro vysokou kvalitu obrazu (vstup: 500 snímků, 1080p50, sekvence crowd\_run). Kompletní tabulky pro ostatní sekvence jsou v Příloze \ref{sec:priloha}.}
 \label{tab:casy}
-\begin{tabular}{|l|c|r|r|r|r|}
+\begin{tabular}{|l|c|r|r|r|c|}
 \hline
-\textbf{Kodér (uzel)} & \textbf{FPS} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Výsledná [MB]} & \textbf{Úspora [\%]} \\
+\textbf{Kodér} & \textbf{FPS} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
-hevc\_videotoolbox & 166,67 & 3 & 1483,15 & 47,37 & 96,81 \\
-libx264 (CPU) & 62,50 & 8 & 1483,15 & 33,51 & 97,74 \\
-libx265 (CPU) & 25,00 & 20 & 1483,15 & 40,32 & 97,28 \\
-libsvtav1 (CPU) & 41,67 & 12 & 1483,15 & 105,37 & 92,90 \\
-libvpx-vp9 (CPU) & 4,81 & 104 & 1483,15 & 120,83 & 91,85 \\
+hevc\_videotoolbox (HW) & 166,67 & 3 & 1483,15 & 173,86 & 88,28\ \% \\
+libx264 (CPU) & 62,50 & 8 & 1483,15 & 33,51 & 97,74\ \% \\
+libx265 (CPU) & 25,00 & 20 & 1483,15 & 40,32 & 97,28\ \% \\
+libsvtav1 (CPU) & 41,67 & 12 & 1483,15 & 105,37 & 92,90\ \% \\
+libvpx-vp9 (CPU) & 4,81 & 104 & 1483,15 & 120,83 & 91,85\ \% \\
 \hline
 \end{tabular}
 \end{table}
@@ -187,7 +187,7 @@ Na Obrázku \ref{fig:rd_vmaf_crowd} je vidět aplikace metriky VMAF na pohybově
 \end{figure}
 
 \subsection*{Vliv prostorové složitosti a časová stabilita}
-Z naměřených výsledků vyplývá přímá úměra mezi prostorovou složitostí (entropií) a kompresní náročností. Sekvence \textit{crowd\_run}, vykazující nejvyšší entropii (7,45 bit/px), vyžaduje pro dosažení VMAF skóre 95 u kodéru \texttt{libx265} o 42 \% vyšší datový tok než sekvence \textit{park\_joy} s nižší entropií (6,97 bit/px). Tímto se experimentálně potvrzuje teoretický předpoklad o vlivu prostorové redundance (\textit{Spatial Redundancy}) na efektivitu komprese.
+Z naměřených výsledků vyplývá přímá úměra mezi prostorovou složitostí (entropií) a kompresní náročností. Sekvence \textit{crowd\_run}, vykazující nejvyšší entropii (7,45 bit/px), vyžaduje pro dosažení VMAF skóre 95 u kodéru \texttt{libx265} o 42 \% vyšší datový tok než sekvence \textit{park\_joy} s nižší entropí (6,97 bit/px). Tímto se experimentálně potvrzuje teoretický předpoklad o vlivu prostorové redundance (\textit{Spatial Redundancy}) na efektivitu komprese.
 
 Kromě průměrných hodnot jsme zkoumali i stabilitu kvality v čase. Jak ukazuje Obrázek \ref{fig:temporal_vmaf}, softwarové kodéry v režimu CRF vykazují vysokou stabilitu, zatímco hardwarový kodér vykazuje propady v náročných pasážích, což je dáno zjednodušenou predikcí v ASIC čipu.
 
@@ -259,15 +259,15 @@ V této sekci jsou uvedeny tabulky výkonnosti pro zbývající testovací sekve
 \begin{table}[H]
 \centering
 \caption{Srovnání výkonnosti kodérů (vstup: 500 snímků, 1080p50, sekvence old\_town\_cross).}
-\begin{tabular}{|l|c|r|r|r|r|}
+\begin{tabular}{|l|c|r|r|r|c|}
 \hline
-\textbf{Kodér (uzel)} & \textbf{FPS} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Výsledná [MB]} & \textbf{Úspora [\%]} \\
+\textbf{Kodér} & \textbf{FPS} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
-hevc\_videotoolbox & 166,67 & 3 & 1483,15 & 9,25 & 99,38 \\
-libx264 (CPU) & 83,33 & 6 & 1483,15 & 10,59 & 99,29 \\
-libx265 (CPU) & 45,45 & 11 & 1483,15 & 11,20 & 99,24 \\
-libsvtav1 (CPU) & 50,00 & 10 & 1483,15 & 41,49 & 97,20 \\
-libvpx-vp9 (CPU) & 4,10 & 122 & 1483,15 & 88,41 & 94,04 \\
+hevc\_videotoolbox (HW) & 166,67 & 3 & 1483,15 & 138,60 & 90,66\ \% \\
+libx264 (CPU) & 83,33 & 6 & 1483,15 & 10.59 & 99,29\ \% \\
+libx265 (CPU) & 45,45 & 11 & 1483,15 & 11,20 & 99,24\ \% \\
+libsvtav1 (CPU) & 50,00 & 10 & 1483,15 & 41,49 & 97,20\ \% \\
+libvpx-vp9 (CPU) & 4,10 & 122 & 1483,15 & 88,41 & 94,04\ \% \\
 \hline
 \end{tabular}
 \end{table}
@@ -275,15 +275,15 @@ libvpx-vp9 (CPU) & 4,10 & 122 & 1483,15 & 88,41 & 94,04 \\
 \begin{table}[H]
 \centering
 \caption{Srovnání výkonnosti kodérů (vstup: 500 snímků, 1080p50, sekvence park\_joy).}
-\begin{tabular}{|l|c|r|r|r|r|}
+\begin{tabular}{|l|c|r|r|r|c|}
 \hline
-\textbf{Kodér (uzel)} & \textbf{FPS} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Výsledná [MB]} & \textbf{Úspora [\%]} \\
+\textbf{Kodér} & \textbf{FPS} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
-hevc\_videotoolbox & 166,67 & 3 & 1483,15 & 65,99 & 95,55 \\
-libx264 (CPU) & 71,43 & 7 & 1483,15 & 41,92 & 97,17 \\
-libx265 (CPU) & 22,73 & 22 & 1483,15 & 52,92 & 96,43 \\
-libsvtav1 (CPU) & 45,45 & 11 & 1483,15 & 128,33 & 91,35 \\
-libvpx-vp9 (CPU) & 4,72 & 106 & 1483,15 & 154,42 & 89,59 \\
+hevc\_videotoolbox (HW) & 166,67 & 3 & 1483,15 & 215,85 & 85,45\ \% \\
+libx264 (CPU) & 71,43 & 7 & 1483,15 & 41,92 & 97,17\ \% \\
+libx265 (CPU) & 22,73 & 22 & 1483,15 & 52,92 & 96,43\ \% \\
+libsvtav1 (CPU) & 45,45 & 11 & 1483,15 & 128,33 & 91,35\ \% \\
+libvpx-vp9 (CPU) & 4,72 & 106 & 1483,15 & 154,42 & 89,59\ \% \\
 \hline
 \end{tabular}
 \end{table}
