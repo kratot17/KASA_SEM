@@ -9,6 +9,7 @@
 \geometry{a4paper, margin=2.5cm}
 \usepackage{float}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \graphicspath{{figures/}}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -131,6 +132,29 @@ Jako referenční bod byla stažena nekomprimovaná videa z databáze Xiph.org \
     \item \textbf{Objem dat a kompresní poměr:} Všechna referenční videa mají délku přibližně 10 sekund (500 snímků). Vzhledem k absenci komprese je jejich velikost na disku přesně identická, a to \textbf{1 555 203 036 bajtů} (cca 1483,16 MB).
     \item \textbf{Prostorová složitost:} Pro objektivní zhodnocení náročnosti jednotlivých scén byla změřena průměrná Shannonova entropie jasové složky (Y) všech snímků referenčních videí (viz Tabulka \ref{tab:entropy}). Tato hodnota indikuje míru prostorové redundance (\textit{Spatial Redundancy}) v sekvenci, kterou se kodéry snaží eliminovat \cite{lec_tech}.
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{frame_crowd_run.jpg}
+        \caption{crowd\_run}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{frame_old_town.jpg}
+        \caption{old\_town\_cross}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{frame_park_joy.jpg}
+        \caption{park\_joy}
+    \end{subfigure}
+    \caption{Ukázkové snímky (250. snímek) z použitých testovacích sekvencí v rozlišení 1080p.}
+    \label{fig:frames_showcase}
+\end{figure}
 
 \begin{table}[H]
 \centering
