@@ -94,7 +94,7 @@ ffmpeg -i~encoded.mp4 -i~reference.y4m -lavfi "[0:v][1:v]psnr=stats_file=psnr.lo
 Pro vyhodnocení dopadu ztrátové komprese využíváme tři základní metriky srovnávající referenční a~komprimovaný obraz:
 
 \begin{itemize}
-    \item \textbf{\hyperref[sec:metrics]{PSNR} (Peak Signal-to-Noise Ratio):} Měří podíl mezi maximální hodnotou signálu a~chybou (MSE). Ačkoliv je standardně používána, její korelace s~lidským vnímáním je omezená, neboť nereflektuje sémantický obsah obrazu \cite{lec_iqa, wang2004image}.
+    \item \textbf{\hyperref[sec:metrics]{PSNR} (Peak Signal-to-Noise Ratio):} Měří podíl mezi maximální hodnotou signálu a~chybou (\hyperref[sec:glossary]{MSE}). Ačkoliv je standardně používána, její korelace s~lidským vnímáním je omezená, neboť nereflektuje sémantický obsah obrazu \cite{lec_iqa, wang2004image}.
     \item \textbf{\hyperref[sec:metrics]{SSIM} (Structural Similarity Index):} Hodnotí zachování strukturální informace (hran a~textur), luminanci a~kontrast. Skóre se pohybuje v~intervalu od 0 do 1.
     \item \textbf{\hyperref[sec:metrics]{VMAF} (Video Multi-Method Assessment Fusion):} Metrika vyvinutá společností Netflix \cite{netflixVMAF}. Pomocí algoritmů strojového učení se snaží simulovat lidského diváka a~aproximovat subjektivní hodnocení MOS (Mean Opinion Score). Pro výpočet byl použit standardní model pro Full HD (1080p) sledování ze vzdálenosti televizního přijímače. Skóre nabývá hodnot od 0 do 100.
 \end{itemize}
@@ -241,6 +241,7 @@ Experimentálně se potvrdilo, že kompresní efektivita úzce souvisí se zvole
     \item[Y4M (YUV4MPEG2):] Jednoduchý souborový formát, který uchovává zcela nekomprimovaná obrazová data a~doplňuje je o~elementární hlavičku. 
     \item[YUV 4:2:0:] Barevný model separující jas (Y) od barvy (U, V). Podvzorkování 4:2:0 znamená redukci barevné informace na čtvrtinu vůči informaci jasové.
     \item[VOD (Video on Demand):] Služba umožňující uživatelům sledovat video obsah (filmy, seriály) podle vlastního výběru v~libovolném čase, nikoliv podle fixního vysílacího schématu (např. Netflix, YouTube).
+    \item[MSE (Mean Squared Error):] Střední kvadratická chyba. Matematická metrika kvantifikující průměrný rozdíl mezi hodnotami pixelů původního a~komprimovaného obrazu. Čím nižší je MSE, tím jsou si obrazy podobnější.
 \end{description}
 
 \newpage
