@@ -54,6 +54,7 @@ S neustálým růstem objemu multimediálních dat na internetu roste i tlak na 
 Zásadním konceptem v oblasti komprese videa je skutečnost, že mezinárodní standardy (jako H.264 či \hyperref[sec:standards]{HEVC}) specifikují výhradně syntaxi datového toku (\hyperref[sec:glossary]{bitstream}) a proces dekódování. Každý standardizovaný dekodér musí ze stejného bitstreamu vyprodukovat identický obraz. Proces \textit{kódování} (encoding) však standardizován není. Výrobci hardwaru a tvůrci softwaru mají volnou ruku v tom, jaké heuristiky a optimalizační algoritmy použijí, pokud je výsledkem validní \hyperref[sec:glossary]{bitstream}. Z tohoto důvodu se vlastnosti různých kodérů implementujících stejný standard diametrálně liší v kvalitě, rychlosti i hardwarové náročnosti.
 
 \subsection*{Standardy a softwarové kodéry}
+\label{sec:standards}
 Pro účely práce byly zvoleny následující video standardy a k nim příslušné softwarové implementace kodérů dostupné v knihovně FFmpeg:
 
 \begin{itemize}
