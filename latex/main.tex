@@ -180,7 +180,7 @@ Pomocí skriptu byl spuštěn FFmpeg \cite{ffmpeg}. Úroveň kvality byla říze
 \subsection*{Výkonnostní srovnání a~vliv HW akcelerace}
 V~této sekci uvádíme detailní srovnání výkonnosti pouze pro sekvenci \textit{old\_town\_cross}. Tato sekvence byla vybrána, jelikož se na základě R-D křivek ukázala jako nejnáročnější pro kódování (křivky dlouhodobě nedosahují hodnoty 100 jako u~ostatních videí). Jak je patrné z~doplňujících tabulek v~Příloze \ref{sec:appendix}, relativní rozdíly v~propustnosti (\hyperref[sec:derived_metrics]{FPS}) a~čase mezi jednotlivými kodéry zůstávají u~ostatních videí velmi podobné a~potvrzují stejné trendy – naprostou dominanci hardwarového řešení v~rychlosti a~vyšší analytickou efektivitu softwarových kodérů.
 
-V~Tabulce \ref{tab:times} jsou uvedeny výsledky měření pro scénář s~vysokou vizuální kvalitou (odpovídající nastavení \hyperref[sec:glossary]{CRF} 22). Zde je nejvíce patrný rozdíl mezi softwarovou hloubkou analýzy a~hrubou silou hardwarového enginu.
+V~Tabulce \ref{tab:times} jsou uvedeny výsledky měření pro scénář s~vysokou vizuální kvalitou (odpovídající nastavení \hyperref[sec:glossary]{CRF} 22).
 
 Zatímco hardwarový kodér \texttt{hevc\_videotoolbox} dosahuje extrémní propustnosti (přes 160 \hyperref[sec:derived_metrics]{FPS}), jeho neschopnost provádět komplexní optimalizace vede k~tomu, že pro stejnou úroveň vizuální kvality vyžaduje výrazně vyšší datový tok. Tento propad efektivity u~\hyperref[sec:glossary]{ASIC} (Application-Specific Integrated Circuit) enginu je způsoben zejména omezeným rozsahem hledání pohybu (Motion Search) a~absencí nebo silným omezením B-snímků (Bi-directional frames) v~rámci GOP (Group of Pictures). To potvrzuje naměřený nárůst datového toku o~více než 300\ \% ve srovnání s~\texttt{libx265} při shodné úrovni \hyperref[sec:metrics]{VMAF}.
 
@@ -204,7 +204,7 @@ libvpx-vp9 (CPU) & 4,10 & 122 & 1555,20 & 92,71 & 94,04\ \% \\
 \subsection*{Analýza objektivity R-D křivek}
 Účelem vyhodnocení Rate-Distortion (R-D) křivek je znázornit vztah mezi datovým tokem (zde reprezentovaným velikostí souboru) a~naměřenou kvalitou obrazu. Efektivnější kodér demonstruje strmější křivku, která se posouvá více nahoru a~doleva.
 
-Na Obrázku \ref{fig:rd_vmaf_old_town} je vidět aplikace metriky \hyperref[sec:metrics]{VMAF} na pohybově nejsložitější sekvenci. Potvrzuje se efektivita nejnovějšího standardu \hyperref[sec:standards]{AV1} (\texttt{libsvtav1}). Dále je zde velmi zřetelný problém sekvence \textit{old\_town\_cross}, kdy křivky pro kodéry (jako například VP9 a~hardwarový HEVC) ani při vysokých datových tocích nedosahují ideální hranice VMAF 100.
+Na Obrázku \ref{fig:rd_vmaf_old_town} je vidět aplikace metriky \hyperref[sec:metrics]{VMAF} na pohybově relativně složité sekvenci. Potvrzuje se efektivita nejnovějšího standardu \hyperref[sec:standards]{AV1} (\texttt{libsvtav1}). Dále je zde velmi zřetelný problém sekvence \textit{old\_town\_cross}, kdy křivky pro kodéry (jako například VP9 a~hardwarový HEVC) ani při vysokých datových tocích nedosahují ideální hranice VMAF 100.
 
 \begin{figure}[H]
     \centering
@@ -247,7 +247,7 @@ Křivky pro další testovací sekvence vykazují analogický trend, kompletní 
 \section{Závěr}
 Experimentálně se potvrdilo, že kompresní efektivita úzce souvisí se zvoleným standardem a~optimalizací kodéru. Formáty nové generace (\hyperref[sec:standards]{HEVC} a~\hyperref[sec:standards]{AV1}) bezpečně překonávají dlouholetý standard H.264 z~pohledu úspory dat při zachování percepční kvality. Hardwarová akcelerace sice naprosto dominuje v~rychlosti kódování, nicméně aktuální architektura dedikovaných enginů (Apple M1 Pro) postrádá analytickou hloubku softwarových kodérů, což vede k~výrazně nižšímu kompresnímu poměru.
 
-Klíčovým zjištěním této práce je však fakt, že přímé porovnávání kodérů napříč různými standardy pouze na základě parametrů, které jsou formálně „vnímány“ jako ekvivalentní (např. CRF 34 vs. Q 66), je fundamentálně zavádějící. Experimenty s~časovou stabilitou a~VMAF skóre (Obrázek \ref{fig:temporal_vmaf}) prokazují, že interní škálování kvality je mezi jednotlivými kodéry naprosto nekompatibilní a~vede k~propastným rozdílům ve výsledném datovém toku.
+Klíčovým zjištěním této práce je však fakt, že přímé porovnávání kodérů napříč různými standardy pouze na základě parametrů, které jsou formálně „vnímány“ jako ekvivalentní (např. CRF 34 vs. Q 66), je fundamentálně zavádějící. Experimenty s~časovou stabilitou a~VMAF skóre (Obrázek \ref{fig:temporal_vmaf}) prokazují, že interní škálování kvality je mezi jednotlivými kodéry naprosto nekompatibilní.
 
 \section*{Návrhy pro budoucí práci}
 \addcontentsline{toc}{section}{Návrhy pro budoucí práci}
