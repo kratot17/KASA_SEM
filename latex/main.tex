@@ -225,7 +225,7 @@ Kromě průměrných hodnot jsme zkoumali i~stabilitu kvality v~čase. Jak ukazu
     \label{fig:temporal_vmaf}
 \end{figure}
 
-Křivky pro další testovací sekvence vykazují analogický trend, kompletní sady naměřených křivek (\hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM}, \hyperref[sec:metrics]{VMAF} pro všechny testovací sekvence) jsou z~důvodu rozsahu přesunuty do Přílohy na konci dokumentu.
+Křivky pro další testovací sekvence vykazují analogický trend, kompletní sady naměřených křivek (\hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM}, \hyperref[sec:metrics]{VMAF} pro všechny testovací sekvence) jsou z~důvodu rozsahu přesunuty do Přílohy \ref{sec:appendix}.
 
 \section{Závěr}
 Experimentálně se potvrdilo, že kompresní efektivita úzce souvisí se zvoleným standardem a~optimalizací kodéru. Formáty nové generace (\hyperref[sec:standards]{HEVC} a~\hyperref[sec:standards]{AV1}) bezpečně překonávají dlouholetý standard H.264 z~pohledu úspory dat při zachování percepční kvality. Z~hlediska metriky BD-Rate vykazuje \hyperref[sec:standards]{AV1} (\texttt{libsvtav1}) průměrně o~15--20\ \% nižší datový tok pro dosažení stejného \hyperref[sec:metrics]{VMAF} skóre jako \hyperref[sec:standards]{HEVC} (\texttt{libx265}) v~oblastech s~vysokou kvalitou. Hardwarová akcelerace sice naprosto dominuje v~rychlosti kódování, nicméně aktuální architektura dedikovaných enginů (Apple M1 Pro) postrádá analytickou hloubku softwarových kodérů, což vede k~výrazně nižšímu kompresnímu poměru a~objemnějším souborům (nárůst bitrate o~více než 300\ \% vůči softwarovému \hyperref[sec:standards]{HEVC}).
