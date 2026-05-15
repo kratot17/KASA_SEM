@@ -29,7 +29,7 @@
 \setlist{noitemsep, topsep=2pt}
 \usepackage[hidelinks]{hyperref}
 
-\title{Analýza vlastností kodéru \hyperref[sec:standardy]{HEVC} a moderních alternativ\\
+\title{Analýza vlastností kodéru \hyperref[sec:standards]{HEVC} a moderních alternativ\\
 \large B(E)2M37KASA - Komprese obrazu a signálů}
 \author{Tomáš Hurta \and Tomáš Kratochvíle}
 \date{\today}
@@ -39,41 +39,41 @@
 \maketitle
 
 \begin{abstract}
-Tento semestrální projekt se zabývá analýzou a srovnáním vlastností moderních standardů pro kompresi videa (\hyperref[sec:standardy]{HEVC}, \hyperref[sec:standardy]{AVC}, \hyperref[sec:standardy]{VP9}, \hyperref[sec:standardy]{AV1}) pomocí nástroje FFmpeg. Na standardizovaných testovacích sekvencích v rozlišení 1080p50 je hodnocena efektivita komprese pomocí metrik \hyperref[sec:metriky]{PSNR}, \hyperref[sec:metriky]{SSIM} a \hyperref[sec:metriky]{VMAF} v závislosti na datovém toku a výpočetní náročnosti. Výsledky ukazují, že moderní kodéry jako libx265 a libsvtav1 dosahují výrazné úspory datového toku oproti staršímu standardu \hyperref[sec:standardy]{AVC}, zatímco hardwarová akcelerace na architektuře Apple Silicon nabízí extrémní propustnost (přes 160 \hyperref[sec:odvozene_metriky]{FPS}) za cenu nárůstu datového toku o více než 300\ \% pro dosažení shodné percepční kvality.
+Tento semestrální projekt se zabývá analýzou a srovnáním vlastností moderních standardů pro kompresi videa (\hyperref[sec:standards]{HEVC}, \hyperref[sec:standards]{AVC}, \hyperref[sec:standards]{VP9}, \hyperref[sec:standards]{AV1}) pomocí nástroje FFmpeg. Na standardizovaných testovacích sekvencích v rozlišení 1080p50 je hodnocena efektivita komprese pomocí metrik \hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM} a \hyperref[sec:metrics]{VMAF} v závislosti na datovém toku a výpočetní náročnosti. Výsledky ukazují, že moderní kodéry jako libx265 a libsvtav1 dosahují výrazné úspory datového toku oproti staršímu standardu \hyperref[sec:standards]{AVC}, zatímco hardwarová akcelerace na architektuře Apple Silicon nabízí extrémní propustnost (přes 160 \hyperref[sec:derived_metrics]{FPS}) za cenu nárůstu datového toku o více než 300\ \% pro dosažení shodné percepční kvality.
 \end{abstract}
 
 \tableofcontents
 \newpage
 
 \section{Úvod}
-S neustálým růstem objemu multimediálních dat na internetu roste i tlak na efektivitu metod komprese obrazu a videa. Tento projekt se zaměřuje na praktické srovnání vybraných moderních videokodeků. Důraz je kladen na standard High Efficiency Video Coding (\hyperref[sec:standardy]{HEVC}), známý též jako H.265, a jeho pozici vůči staršímu standardu Advanced Video Coding (\hyperref[sec:standardy]{AVC}, H.264) a moderním alternativám \hyperref[sec:standardy]{VP9} a \hyperref[sec:standardy]{AV1}. Cílem práce je demonstrovat vlastnosti těchto kodeků pomocí softwaru FFmpeg, detailně popsat jejich kompresní efektivitu a analyzovat vliv použitého hardwaru na výsledný poměr kvality a datového toku. Veškeré měřicí skripty, vygenerovaná data a zdrojové kódy tohoto dokumentu jsou veřejně dostupné v repozitáři na platformě GitHub \href{https://github.com/kratot17/KASA_SEM}{(kratot17/KASA\_SEM)}. Složky s objemnými daty, konkrétně nekomprimovaná referenční videa (\texttt{raw\_videos}) a vygenerované výstupy z kodérů (\texttt{encoded\_videos}), jsou z kapacitních důvodů uloženy v dedikované složce na \href{https://drive.google.com/drive/folders/1dQosNQVMNARsGfBLjNj08zZU0Cm_nrx5?usp=sharing}{Google Drive}.
+S neustálým růstem objemu multimediálních dat na internetu roste i tlak na efektivitu metod komprese obrazu a videa. Tento projekt se zaměřuje na praktické srovnání vybraných moderních videokodeků. Důraz je kladen na standard High Efficiency Video Coding (\hyperref[sec:standards]{HEVC}), známý též jako H.265, a jeho pozici vůči staršímu standardu Advanced Video Coding (\hyperref[sec:standards]{AVC}, H.264) a moderním alternativám \hyperref[sec:standards]{VP9} a \hyperref[sec:standards]{AV1}. Cílem práce je demonstrovat vlastnosti těchto kodeků pomocí softwaru FFmpeg, detailně popsat jejich kompresní efektivitu a analyzovat vliv použitého hardwaru na výsledný poměr kvality a datového toku. Veškeré měřicí skripty, vygenerovaná data a zdrojové kódy tohoto dokumentu jsou veřejně dostupné v repozitáři na platformě GitHub \href{https://github.com/kratot17/KASA_SEM}{(kratot17/KASA\_SEM)}. Složky s objemnými daty, konkrétně nekomprimovaná referenční videa (\texttt{raw\_videos}) a vygenerované výstupy z kodérů (\texttt{encoded\_videos}), jsou z kapacitních důvodů uloženy v dedikované složce na \href{https://drive.google.com/drive/folders/1dQosNQVMNARsGfBLjNj08zZU0Cm_nrx5?usp=sharing}{Google Drive}.
 
 \section{Teoretický základ}
 \subsection*{Paradigma standardizace videa: Dekodér vs. Kodér}
-Zásadním konceptem v oblasti komprese videa je skutečnost, že mezinárodní standardy (jako H.264 či \hyperref[sec:standardy]{HEVC}) specifikují výhradně syntaxi datového toku (\hyperref[sec:slovnik]{bitstream}) a proces dekódování. Každý standardizovaný dekodér musí ze stejného bitstreamu vyprodukovat identický obraz. Proces \textit{kódování} (encoding) však standardizován není. Výrobci hardwaru a tvůrci softwaru mají volnou ruku v tom, jaké heuristiky a optimalizační algoritmy použijí, pokud je výsledkem validní \hyperref[sec:slovnik]{bitstream}. Z tohoto důvodu se vlastnosti různých kodérů implementujících stejný standard diametrálně liší v kvalitě, rychlosti i hardwarové náročnosti.
+Zásadním konceptem v oblasti komprese videa je skutečnost, že mezinárodní standardy (jako H.264 či \hyperref[sec:standards]{HEVC}) specifikují výhradně syntaxi datového toku (\hyperref[sec:glossary]{bitstream}) a proces dekódování. Každý standardizovaný dekodér musí ze stejného bitstreamu vyprodukovat identický obraz. Proces \textit{kódování} (encoding) však standardizován není. Výrobci hardwaru a tvůrci softwaru mají volnou ruku v tom, jaké heuristiky a optimalizační algoritmy použijí, pokud je výsledkem validní \hyperref[sec:glossary]{bitstream}. Z tohoto důvodu se vlastnosti různých kodérů implementujících stejný standard diametrálně liší v kvalitě, rychlosti i hardwarové náročnosti.
 
 \subsection*{Standardy a softwarové kodéry}
 Pro účely práce byly zvoleny následující video standardy a k nim příslušné softwarové implementace kodérů dostupné v knihovně FFmpeg:
 
 \begin{itemize}
-    \item \textbf{H.264 (\hyperref[sec:standardy]{AVC}) a \texttt{libx264}:} Standard z roku 2003, aktuálně nejrozšířenější formát na světě s téměř 100\% hardwarovou kompatibilitou na přehrávacích zařízeních. Poskytuje excelentní rovnováhu mezi rychlostí enkódování a kvalitou.
-    \item \textbf{H.265 (\hyperref[sec:standardy]{HEVC}) a \texttt{libx265}:} Nástupce \hyperref[sec:standardy]{AVC}. Přinesl koncept \textit{Coding Tree Units} (CTU) o velikosti až 64x64 pixelů (oproti fixním 16x16 macroblokům v H.264) a 35 směrů intra-predikce (oproti 9 v H.264) \cite{lec_hevc}. Zavádí také technologii \textit{Sample Adaptive Offset} (SAO) pro potlačení artefaktů na hranách a redukci tzv. ringing efektu \cite{lec_hevc}. Díky těmto vylepšením dosahuje až 50\% úspory datového toku vůči H.264 při zachování stejné kvality.
-    \item \textbf{\hyperref[sec:standardy]{VP9} a \texttt{libvpx-vp9}:} Otevřená a bezplatná alternativa k \hyperref[sec:standardy]{HEVC}, masivně využívána platformou YouTube pro streamování 4K videa. Formát VP8 (zmíněný v zadání) byl z testování vyloučen, neboť je v současnosti považován za obsolentní a byl plně nahrazen technologicky vyspělejším standardem \hyperref[sec:standardy]{VP9}.
-    \item \textbf{\hyperref[sec:standardy]{AV1} a \texttt{libsvtav1}:} Formát vyvinutý aliancí AOMedia. Nabízí mimořádně efektivní kompresi, jejíž jedinou nevýhodou je extrémní výpočetní náročnost omezující její nasazení v reálném čase.
+    \item \textbf{H.264 (\hyperref[sec:standards]{AVC}) a \texttt{libx264}:} Standard z roku 2003, aktuálně nejrozšířenější formát na světě s téměř 100\% hardwarovou kompatibilitou na přehrávacích zařízeních. Poskytuje excelentní rovnováhu mezi rychlostí enkódování a kvalitou.
+    \item \textbf{H.265 (\hyperref[sec:standards]{HEVC}) a \texttt{libx265}:} Nástupce \hyperref[sec:standards]{AVC}. Přinesl koncept \textit{Coding Tree Units} (CTU) o velikosti až 64x64 pixelů (oproti fixním 16x16 macroblokům v H.264) a 35 směrů intra-predikce (oproti 9 v H.264) \cite{lec_hevc}. Zavádí také technologii \textit{Sample Adaptive Offset} (SAO) pro potlačení artefaktů na hranách a redukci tzv. ringing efektu \cite{lec_hevc}. Díky těmto vylepšením dosahuje až 50\% úspory datového toku vůči H.264 při zachování stejné kvality.
+    \item \textbf{\hyperref[sec:standards]{VP9} a \texttt{libvpx-vp9}:} Otevřená a bezplatná alternativa k \hyperref[sec:standards]{HEVC}, masivně využívána platformou YouTube pro streamování 4K videa. Formát VP8 (zmíněný v zadání) byl z testování vyloučen, neboť je v současnosti považován za obsolentní a byl plně nahrazen technologicky vyspělejším standardem \hyperref[sec:standards]{VP9}.
+    \item \textbf{\hyperref[sec:standards]{AV1} a \texttt{libsvtav1}:} Formát vyvinutý aliancí AOMedia. Nabízí mimořádně efektivní kompresi, jejíž jedinou nevýhodou je extrémní výpočetní náročnost omezující její nasazení v reálném čase.
 \end{itemize}
 
 \subsection*{Konfigurace a použití nástroje FFmpeg}
-Pro zajištění reproducibility experimentu uvádíme klíčové parametry použité pro kódování. Je nutné zdůraznit, že parametr \hyperref[sec:slovnik]{CRF} (Constant Rate Factor) není mezi různými kodéry přímo srovnatelný (např. \hyperref[sec:slovnik]{CRF} 22 u x264 neprodukuje stejnou kvalitu jako \hyperref[sec:slovnik]{CRF} 22 u \hyperref[sec:standardy]{AV1}). Hlavním nástrojem pro srovnání efektivity jsou proto R-D křivky.
+Pro zajištění reproducibility experimentu uvádíme klíčové parametry použité pro kódování. Je nutné zdůraznit, že parametr \hyperref[sec:glossary]{CRF} (Constant Rate Factor) není mezi různými kodéry přímo srovnatelný (např. \hyperref[sec:glossary]{CRF} 22 u x264 neprodukuje stejnou kvalitu jako \hyperref[sec:glossary]{CRF} 22 u \hyperref[sec:standards]{AV1}). Hlavním nástrojem pro srovnání efektivity jsou proto R-D křivky.
 
 Použité konfigurace:
 \begin{itemize}
     \item \textbf{x264/x265:} \texttt{-preset medium} (výchozí kompromis mezi rychlostí a efektivitou).
-    \item \textbf{\hyperref[sec:standardy]{VP9}:} \texttt{-deadline good -cpu-used 2} (standardní režim pro \hyperref[sec:slovnik]{VOD}).
-    \item \textbf{\hyperref[sec:standardy]{AV1}:} \texttt{-preset 8} (vyvážené nastavení pro moderní CPU).
-    \item \textbf{HW \hyperref[sec:standardy]{HEVC}:} \texttt{-q:v [60, 66, 72, 78]} (ekvivalenty kvality pro Apple Silicon).
+    \item \textbf{\hyperref[sec:standards]{VP9}:} \texttt{-deadline good -cpu-used 2} (standardní režim pro \hyperref[sec:glossary]{VOD}).
+    \item \textbf{\hyperref[sec:standards]{AV1}:} \texttt{-preset 8} (vyvážené nastavení pro moderní CPU).
+    \item \textbf{HW \hyperref[sec:standards]{HEVC}:} \texttt{-q:v [60, 66, 72, 78]} (ekvivalenty kvality pro Apple Silicon).
 \end{itemize}
 
-\begin{lstlisting}[language=bash, caption={Příklad příkazu pro kódování do \hyperref[sec:standardy]{HEVC} (CPU vs. HW).}]
+\begin{lstlisting}[language=bash, caption={Příklad příkazu pro kódování do \hyperref[sec:standards]{HEVC} (CPU vs. HW).}]
 # Softwarové kódování (libx265)
 ffmpeg -i input.y4m -c:v libx265 -crf 28 -preset medium output_cpu.mp4
 
@@ -83,35 +83,35 @@ ffmpeg -i input.y4m -c:v hevc_videotoolbox -q:v 66 output_hw.mp4
 
 Výpočet objektivních metrik byl realizován pomocí filtru \texttt{libvmaf} integrovaného přímo ve FFmpeg, což eliminuje chyby vzniklé při externím zpracování souborů.
 
-\begin{lstlisting}[language=bash, caption={Příklad příkazu pro výpočet metrik \hyperref[sec:metriky]{PSNR}, \hyperref[sec:metriky]{SSIM} a \hyperref[sec:metriky]{VMAF}.}]
+\begin{lstlisting}[language=bash, caption={Příklad příkazu pro výpočet metrik \hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM} a \hyperref[sec:metrics]{VMAF}.}]
 ffmpeg -i encoded.mp4 -i reference.y4m -filter_complex "libvmaf=model_path=vmaf_v0.6.1.json:psnr=1:ssim=1" -f null -
 \end{lstlisting}
 
 \subsection*{Metriky objektivní kvality videa}
-\label{sec:metriky}
+\label{sec:metrics}
 Pro vyhodnocení dopadu ztrátové komprese využíváme tři základní metriky srovnávající referenční a komprimovaný obraz:
 
 \begin{itemize}
-    \item \textbf{\hyperref[sec:metriky]{PSNR} (Peak Signal-to-Noise Ratio):} Měří podíl mezi maximální hodnotou signálu a chybou (MSE). Ačkoliv je standardně používána, její korelace s lidským vnímáním je omezená, neboť nereflektuje sémantický obsah obrazu \cite{lec_iqa, wang2004image}.
-    \item \textbf{\hyperref[sec:metriky]{SSIM} (Structural Similarity Index):} Hodnotí zachování strukturální informace (hran a textur), luminanci a kontrast. Skóre se pohybuje v intervalu od 0 do 1.
-    \item \textbf{\hyperref[sec:metriky]{VMAF} (Video Multi-Method Assessment Fusion):} Metrika vyvinutá společností Netflix \cite{netflixVMAF}. Pomocí algoritmů strojového učení se snaží simulovat lidského diváka a aproximovat subjektivní hodnocení MOS (Mean Opinion Score). Pro výpočet byl použit standardní model pro Full HD (1080p) sledování ze vzdálenosti televizního přijímače. Skóre nabývá hodnot od 0 do 100.
+    \item \textbf{\hyperref[sec:metrics]{PSNR} (Peak Signal-to-Noise Ratio):} Měří podíl mezi maximální hodnotou signálu a chybou (MSE). Ačkoliv je standardně používána, její korelace s lidským vnímáním je omezená, neboť nereflektuje sémantický obsah obrazu \cite{lec_iqa, wang2004image}.
+    \item \textbf{\hyperref[sec:metrics]{SSIM} (Structural Similarity Index):} Hodnotí zachování strukturální informace (hran a textur), luminanci a kontrast. Skóre se pohybuje v intervalu od 0 do 1.
+    \item \textbf{\hyperref[sec:metrics]{VMAF} (Video Multi-Method Assessment Fusion):} Metrika vyvinutá společností Netflix \cite{netflixVMAF}. Pomocí algoritmů strojového učení se snaží simulovat lidského diváka a aproximovat subjektivní hodnocení MOS (Mean Opinion Score). Pro výpočet byl použit standardní model pro Full HD (1080p) sledování ze vzdálenosti televizního přijímače. Skóre nabývá hodnot od 0 do 100.
 \end{itemize}
 
 \subsection*{Odvozené technické a efektivnostní metriky}
-\label{sec:odvozene_metriky}
+\label{sec:derived_metrics}
 Analýza výkonnosti kodérů se neopírá pouze o obrazovou kvalitu, ale i o analytické metriky odvozené z velikosti souborů a času zpracování. 
 
-\textbf{Kompresní poměr (Compression Ratio - \hyperref[sec:odvozene_metriky]{CR})} definuje poměr mezi původní nekomprimovanou velikostí dat ($S_{orig}$) a velikostí zkomprimovaného souboru ($S_{comp}$):
+\textbf{Kompresní poměr (Compression Ratio - \hyperref[sec:derived_metrics]{CR})} definuje poměr mezi původní nekomprimovanou velikostí dat ($S_{orig}$) a velikostí zkomprimovaného souboru ($S_{comp}$):
 \begin{equation*}
-    \hyperref[sec:odvozene_metriky]{CR} = \frac{S_{orig}}{S_{comp}}
+    \hyperref[sec:derived_metrics]{CR} = \frac{S_{orig}}{S_{comp}}
 \end{equation*}
 
-\textbf{Bits Per Pixel (\hyperref[sec:odvozene_metriky]{BPP})} je metrika nezávislá na rozlišení určující průměrný počet bitů alokovaných na jeden pixel obrazu, kde $R$ je datový tok, $W$ šířka, $H$ výška a $\hyperref[sec:odvozene_metriky]{FPS}$ snímková frekvence:
+\textbf{Bits Per Pixel (\hyperref[sec:derived_metrics]{BPP})} je metrika nezávislá na rozlišení určující průměrný počet bitů alokovaných na jeden pixel obrazu, kde $R$ je datový tok, $W$ šířka, $H$ výška a $\hyperref[sec:derived_metrics]{FPS}$ snímková frekvence:
 \begin{equation*}
-    \hyperref[sec:odvozene_metriky]{BPP} = \frac{R}{W \times H \times \hyperref[sec:odvozene_metriky]{FPS}}
+    \hyperref[sec:derived_metrics]{BPP} = \frac{R}{W \times H \times \hyperref[sec:derived_metrics]{FPS}}
 \end{equation*}
 
-\textbf{Rychlost kódování v \hyperref[sec:odvozene_metriky]{FPS}} poskytuje přesnější údaj o výpočetní propustnosti kodéru než prostý časový údaj, zejména při porovnávání různě dlouhých videí:
+\textbf{Rychlost kódování v \hyperref[sec:derived_metrics]{FPS}} poskytuje přesnější údaj o výpočetní propustnosti kodéru než prostý časový údaj, zejména při porovnávání různě dlouhých videí:
 \begin{equation*}
     FPS_{enc} = \frac{N_{frames}}{t_{enc}}
 \end{equation*}
@@ -126,7 +126,7 @@ Smyslem práce není stanovit absolutní časy enkódování (které by se liši
 \subsection*{Specifikace testovacích videí}
 Jako referenční bod byla stažena nekomprimovaná videa z databáze Xiph.org \cite{xiphDerf}. Zvolené sekvence reprezentují náročné kompresní scénáře.
 \begin{itemize}
-    \item \textbf{Formát a prostor:} \hyperref[sec:slovnik]{Y4M} (YUV4MPEG2), bez komprese. Barevný prostor \hyperref[sec:slovnik]{YUV 4:2:0}, 8-bit.
+    \item \textbf{Formát a prostor:} \hyperref[sec:glossary]{Y4M} (YUV4MPEG2), bez komprese. Barevný prostor \hyperref[sec:glossary]{YUV 4:2:0}, 8-bit.
     \item \textbf{Rozlišení a frekvence:} 1920x1080 (Full HD) při 50 snímcích za sekundu (fps).
     \item \textbf{Objem dat a kompresní poměr:} Všechna referenční videa mají délku přibližně 10 sekund (500 snímků). Vzhledem k absenci komprese je jejich velikost na disku přesně identická, a to \textbf{1 555 203 036 bajtů} (cca 1483,16 MB).
     \item \textbf{Prostorová složitost:} Pro objektivní zhodnocení náročnosti jednotlivých scén byla změřena průměrná Shannonova entropie jasové složky (Y) všech snímků referenčních videí (viz Tabulka \ref{tab:entropy}). Tato hodnota indikuje míru prostorové redundance (\textit{Spatial Redundancy}) v sekvenci, kterou se kodéry snaží eliminovat \cite{lec_tech}.
@@ -148,24 +148,24 @@ park\_joy\_1080p50.y4m & 6,9707 & 6,8512 & 7,0921 \\
 \end{table}
 
 \subsection*{Dávkové zpracování (FFmpeg)}
-Pomocí skriptu byl aplikován software FFmpeg \cite{ffmpeg}. Úroveň kvality byla řízena pomocí parametru \hyperref[sec:slovnik]{CRF} (pro softwarové kodéry) a parametru \texttt{q:v} (pro HW). Testovány byly kompromisní stupně kvality s ohledem na odlišné implementace škálování. 
+Pomocí skriptu byl aplikován software FFmpeg \cite{ffmpeg}. Úroveň kvality byla řízena pomocí parametru \hyperref[sec:glossary]{CRF} (pro softwarové kodéry) a parametru \texttt{q:v} (pro HW). Testovány byly kompromisní stupně kvality s ohledem na odlišné implementace škálování. 
 
 \section{Výsledky a diskuze}
 
 \subsection*{Výkonnostní srovnání a vliv HW akcelerace}
-V této sekci uvádíme detailní srovnání výkonnosti pouze pro sekvenci \textit{crowd\_run}. Tato sekvence byla vybrána jako reprezentativní vzorek, neboť vykazuje nejvyšší prostorovou entropii a je pro kodéry nejnáročnější. Jak je patrné z doplňujících tabulek v Příloze \ref{sec:priloha}, relativní rozdíly v propustnosti (\hyperref[sec:odvozene_metriky]{FPS}) a čase mezi jednotlivými kodéry zůstávají u ostatních videí velmi podobné a potvrzují stejné trendy – naprostou dominanci hardwarového řešení v rychlosti a vyšší analytickou efektivitu softwarových kodérů.
+V této sekci uvádíme detailní srovnání výkonnosti pouze pro sekvenci \textit{crowd\_run}. Tato sekvence byla vybrána jako reprezentativní vzorek, neboť vykazuje nejvyšší prostorovou entropii a je pro kodéry nejnáročnější. Jak je patrné z doplňujících tabulek v Příloze \ref{sec:appendix}, relativní rozdíly v propustnosti (\hyperref[sec:derived_metrics]{FPS}) a čase mezi jednotlivými kodéry zůstávají u ostatních videí velmi podobné a potvrzují stejné trendy – naprostou dominanci hardwarového řešení v rychlosti a vyšší analytickou efektivitu softwarových kodérů.
 
-V Tabulce \ref{tab:casy} jsou uvedeny výsledky měření pro scénář s vysokou vizuální kvalitou (odpovídající nastavení \hyperref[sec:slovnik]{CRF} 22). Zde je nejvíce patrný rozdíl mezi softwarovou hloubkou analýzy a hrubou silou hardwarového enginu.
+V Tabulce \ref{tab:times} jsou uvedeny výsledky měření pro scénář s vysokou vizuální kvalitou (odpovídající nastavení \hyperref[sec:glossary]{CRF} 22). Zde je nejvíce patrný rozdíl mezi softwarovou hloubkou analýzy a hrubou silou hardwarového enginu.
 
-Zatímco hardwarový kodér \texttt{hevc\_videotoolbox} dosahuje extrémní propustnosti (přes 160 \hyperref[sec:odvozene_metriky]{FPS}), jeho neschopnost provádět komplexní optimalizace vede k tomu, že pro stejnou úroveň vizuální kvality vyžaduje výrazně vyšší datový tok. Tento propad efektivity u \hyperref[sec:slovnik]{ASIC} (Application-Specific Integrated Circuit) enginu je způsoben zejména omezeným rozsahem hledání pohybu (Motion Search) a absencí nebo silným omezením B-snímků (Bi-directional frames) v rámci GOP (Group of Pictures). To potvrzuje naměřený nárůst datového toku o více než 300\ \% ve srovnání s \texttt{libx265} při shodné úrovni \hyperref[sec:metriky]{VMAF}.
+Zatímco hardwarový kodér \texttt{hevc\_videotoolbox} dosahuje extrémní propustnosti (přes 160 \hyperref[sec:derived_metrics]{FPS}), jeho neschopnost provádět komplexní optimalizace vede k tomu, že pro stejnou úroveň vizuální kvality vyžaduje výrazně vyšší datový tok. Tento propad efektivity u \hyperref[sec:glossary]{ASIC} (Application-Specific Integrated Circuit) enginu je způsoben zejména omezeným rozsahem hledání pohybu (Motion Search) a absencí nebo silným omezením B-snímků (Bi-directional frames) v rámci GOP (Group of Pictures). To potvrzuje naměřený nárůst datového toku o více než 300\ \% ve srovnání s \texttt{libx265} při shodné úrovni \hyperref[sec:metrics]{VMAF}.
 
 \begin{table}[H]
 \centering
-\caption{Srovnání výkonnosti kodérů pro vysokou kvalitu obrazu (vstup: 500 snímků, 1080p50, sekvence crowd\_run). Kompletní tabulky pro ostatní sekvence jsou v Příloze \ref{sec:priloha}.}
-\label{tab:casy}
+\caption{Srovnání výkonnosti kodérů pro vysokou kvalitu obrazu (vstup: 500 snímků, 1080p50, sekvence crowd\_run). Kompletní tabulky pro ostatní sekvence jsou v Příloze \ref{sec:appendix}.}
+\label{tab:times}
 \begin{tabular}{|l|c|r|r|r|c|}
 \hline
-\textbf{Kodér} & \textbf{\hyperref[sec:odvozene_metriky]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
+\textbf{Kodér} & \textbf{\hyperref[sec:derived_metrics]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
 hevc\_videotoolbox (HW) & 166,67 & 3 & 1483,16 & 173,86 & 88,28\ \% \\
 libx264 (CPU) & 62,50 & 8 & 1483,16 & 33,51 & 97,74\ \% \\
@@ -179,35 +179,35 @@ libvpx-vp9 (CPU) & 4,81 & 104 & 1483,16 & 120,83 & 91,85\ \% \\
 \subsection*{Analýza objektivity R-D křivek}
 Účelem vyhodnocení Rate-Distortion (R-D) křivek je znázornit vztah mezi datovým tokem (zde reprezentovaným velikostí souboru) a naměřenou kvalitou obrazu. Efektivnější kodér demonstruje strmější křivku, která se posouvá více nahoru a doleva.
 
-Na Obrázku \ref{fig:rd_vmaf_crowd} je vidět aplikace metriky \hyperref[sec:metriky]{VMAF} na pohybově složitou sekvenci. Potvrzuje se efektivita nejnovějšího standardu \hyperref[sec:standardy]{AV1} (\texttt{libsvtav1}). Hardwarový kodér je v této grafické reprezentaci výrazně posunut vpravo; vyžaduje přibližně čtyřnásobný objem dat k udržení stejného \hyperref[sec:metriky]{VMAF} skóre jako \texttt{libx265}. 
+Na Obrázku \ref{fig:rd_vmaf_crowd} je vidět aplikace metriky \hyperref[sec:metrics]{VMAF} na pohybově složitou sekvenci. Potvrzuje se efektivita nejnovějšího standardu \hyperref[sec:standards]{AV1} (\texttt{libsvtav1}). Hardwarový kodér je v této grafické reprezentaci výrazně posunut vpravo; vyžaduje přibližně čtyřnásobný objem dat k udržení stejného \hyperref[sec:metrics]{VMAF} skóre jako \texttt{libx265}. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{rd_vmaf_crowd_run_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metriky]{VMAF}) pro sekvenci crowd\_run\_1080p50.}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{VMAF}) pro sekvenci crowd\_run\_1080p50.}
     \label{fig:rd_vmaf_crowd}
 \end{figure}
 
 \subsection*{Vliv prostorové složitosti a časová stabilita}
-Z naměřených výsledků vyplývá přímá úměra mezi prostorovou složitostí (entropií) a kompresní náročností. Sekvence \textit{crowd\_run}, vykazující nejvyšší entropii (7,45 bit/px), vyžaduje pro dosažení \hyperref[sec:metriky]{VMAF} skóre 95 u kodéru \texttt{libx265} o 42 \% vyšší datový tok než sekvence \textit{park\_joy} s nižší entropí (6,97 bit/px). Tímto se experimentálně potvrzuje teoretický předpoklad o vlivu prostorové redundance (\textit{Spatial Redundancy}) na efektivitu komprese.
+Z naměřených výsledků vyplývá přímá úměra mezi prostorovou složitostí (entropií) a kompresní náročností. Sekvence \textit{crowd\_run}, vykazující nejvyšší entropii (7,45 bit/px), vyžaduje pro dosažení \hyperref[sec:metrics]{VMAF} skóre 95 u kodéru \texttt{libx265} o 42 \% vyšší datový tok než sekvence \textit{park\_joy} s nižší entropí (6,97 bit/px). Tímto se experimentálně potvrzuje teoretický předpoklad o vlivu prostorové redundance (\textit{Spatial Redundancy}) na efektivitu komprese.
 
-Kromě průměrných hodnot jsme zkoumali i stabilitu kvality v čase. Jak ukazuje Obrázek \ref{fig:temporal_vmaf}, softwarové kodéry v režimu \hyperref[sec:slovnik]{CRF} vykazují vysokou stabilitu, zatímco hardwarový kodér vykazuje propady v náročných pasážích, což je dáno zjednodušenou predikcí v \hyperref[sec:slovnik]{ASIC} čipu.
+Kromě průměrných hodnot jsme zkoumali i stabilitu kvality v čase. Jak ukazuje Obrázek \ref{fig:temporal_vmaf}, softwarové kodéry v režimu \hyperref[sec:glossary]{CRF} vykazují vysokou stabilitu, zatímco hardwarový kodér vykazuje propady v náročných pasážích, což je dáno zjednodušenou predikcí v \hyperref[sec:glossary]{ASIC} čipu.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{per_frame_vmaf_crowd_run_1080p50.pdf}
-    \caption{Časový průběh \hyperref[sec:metriky]{VMAF} pro sekvenci crowd\_run (střední kvalita).}
+    \caption{Časový průběh \hyperref[sec:metrics]{VMAF} pro sekvenci crowd\_run (střední kvalita).}
     \label{fig:temporal_vmaf}
 \end{figure}
 
-Křivky pro další testovací sekvence vykazují analogický trend, kompletní sady naměřených křivek (\hyperref[sec:metriky]{PSNR}, \hyperref[sec:metriky]{SSIM}, \hyperref[sec:metriky]{VMAF} pro všechny testovací sekvence) jsou z důvodu rozsahu přesunuty do Přílohy na konci dokumentu.
+Křivky pro další testovací sekvence vykazují analogický trend, kompletní sady naměřených křivek (\hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM}, \hyperref[sec:metrics]{VMAF} pro všechny testovací sekvence) jsou z důvodu rozsahu přesunuty do Přílohy na konci dokumentu.
 
 \section{Závěr}
-Experimentálně se potvrdilo, že kompresní efektivita úzce souvisí se zvoleným standardem a optimalizací kodéru. Formáty nové generace (\hyperref[sec:standardy]{HEVC} a \hyperref[sec:standardy]{AV1}) bezpečně překonávají dlouholetý standard H.264 z pohledu úspory dat při zachování percepční kvality. Z hlediska metriky BD-Rate vykazuje \hyperref[sec:standardy]{AV1} (\texttt{libsvtav1}) průměrně o 15--20\ \% nižší datový tok pro dosažení stejného \hyperref[sec:metriky]{VMAF} skóre jako \hyperref[sec:standardy]{HEVC} (\texttt{libx265}) v oblastech s vysokou kvalitou. Hardwarová akcelerace sice naprosto dominuje v rychlosti kódování, nicméně aktuální architektura dedikovaných enginů (Apple M1 Pro) postrádá analytickou hloubku softwarových kodérů, což vede k výrazně nižšímu kompresnímu poměru a objemnějším souborům (nárůst bitrate o více než 300\ \% vůči softwarovému \hyperref[sec:standardy]{HEVC}).
+Experimentálně se potvrdilo, že kompresní efektivita úzce souvisí se zvoleným standardem a optimalizací kodéru. Formáty nové generace (\hyperref[sec:standards]{HEVC} a \hyperref[sec:standards]{AV1}) bezpečně překonávají dlouholetý standard H.264 z pohledu úspory dat při zachování percepční kvality. Z hlediska metriky BD-Rate vykazuje \hyperref[sec:standards]{AV1} (\texttt{libsvtav1}) průměrně o 15--20\ \% nižší datový tok pro dosažení stejného \hyperref[sec:metrics]{VMAF} skóre jako \hyperref[sec:standards]{HEVC} (\texttt{libx265}) v oblastech s vysokou kvalitou. Hardwarová akcelerace sice naprosto dominuje v rychlosti kódování, nicméně aktuální architektura dedikovaných enginů (Apple M1 Pro) postrádá analytickou hloubku softwarových kodérů, což vede k výrazně nižšímu kompresnímu poměru a objemnějším souborům (nárůst bitrate o více než 300\ \% vůči softwarovému \hyperref[sec:standards]{HEVC}).
 
 \newpage
 \section*{Slovník pojmů}
-\label{sec:slovnik}
+\label{sec:glossary}
 \addcontentsline{toc}{section}{Slovník pojmů}
 \begin{description}
     \item[ASIC (Application-Specific Integrated Circuit):] Integrovaný obvod navržený přesně pro jeden specifický účel, nikoli pro obecné výpočty (jako centrální procesor).
@@ -224,7 +224,7 @@ Experimentálně se potvrdilo, že kompresní efektivita úzce souvisí se zvole
 \addcontentsline{toc}{section}{Reference}
 
 \bibitem{sullivan2012overview}
-G. J. Sullivan, J. Ohm, W. -J. Han a T. Wiegand, \textit{Overview of the High Efficiency Video Coding (\hyperref[sec:standardy]{HEVC}) Standard}, in IEEE Transactions on Circuits and Systems for Video Technology, vol. 22, no. 12, pp. 1649-1668, Dec. 2012.
+G. J. Sullivan, J. Ohm, W. -J. Han a T. Wiegand, \textit{Overview of the High Efficiency Video Coding (\hyperref[sec:standards]{HEVC}) Standard}, in IEEE Transactions on Circuits and Systems for Video Technology, vol. 22, no. 12, pp. 1649-1668, Dec. 2012.
 
 \bibitem{wang2004image}
 Z. Wang, A. C. Bovik, H. R. Sheikh a E. P. Simoncelli, \textit{Image quality assessment: from error visibility to structural similarity}, in IEEE Transactions on Image Processing, vol. 13, no. 4, pp. 600-612, April 2004.
@@ -239,7 +239,7 @@ Xiph.org Foundation, \textit{Derf's Test Media Collection}, Standardizovaná dat
 FFmpeg team, \textit{FFmpeg - A complete, cross-platform solution}. [Online]. Dostupné z: \url{https://ffmpeg.org/}
 
 \bibitem{lec_hevc}
-K. Fliegel, \textit{Standardy kódování videa, MPEG1, MPEG2, H.264/\hyperref[sec:standardy]{AVC}, H.265/\hyperref[sec:standardy]{HEVC}}, přednáška č. 11 v předmětu B(E)2M37KASA Komprese obrazu a signálů. [Online]. ČVUT v Praze, FEL, 2026. Dostupné z: \url{https://moodle.fel.cvut.cz/course/view.php?id=9933}
+K. Fliegel, \textit{Standardy kódování videa, MPEG1, MPEG2, H.264/\hyperref[sec:standards]{AVC}, H.265/\hyperref[sec:standards]{HEVC}}, přednáška č. 11 v předmětu B(E)2M37KASA Komprese obrazu a signálů. [Online]. ČVUT v Praze, FEL, 2026. Dostupné z: \url{https://moodle.fel.cvut.cz/course/view.php?id=9933}
 
 \bibitem{lec_iqa}
 K. Fliegel, \textit{Ztrátové kódování obrazu, lidský vizuální systém, metody hodnocení kvality obrazu}, přednáška č. 8 v předmětu B(E)2M37KASA Komprese obrazu a signálů. [Online]. ČVUT v Praze, FEL, 2026. Dostupné z: \url{https://moodle.fel.cvut.cz/course/view.php?id=9933}
@@ -252,7 +252,7 @@ K. Fliegel, \textit{Základní techniky kódování videa}, přednáška č. 10 
 \clearpage
 \appendix
 \section{Příloha: Naměřené grafy a doplňující data}
-\label{sec:priloha}
+\label{sec:appendix}
 
 Tato příloha obsahuje kompletní sadu naměřených grafů pro všechny testované sekvence a metriky, které nebyly z důvodu přehlednosti uvedeny v hlavní části práce.
 
@@ -264,7 +264,7 @@ V této sekci jsou uvedeny tabulky výkonnosti pro zbývající testovací sekve
 \caption{Srovnání výkonnosti kodérů (vstup: 500 snímků, 1080p50, sekvence old\_town\_cross).}
 \begin{tabular}{|l|c|r|r|r|c|}
 \hline
-\textbf{Kodér} & \textbf{\hyperref[sec:odvozene_metriky]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
+\textbf{Kodér} & \textbf{\hyperref[sec:derived_metrics]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
 hevc\_videotoolbox (HW) & 166,67 & 3 & 1483,16 & 138,59 & 90,66\ \% \\
 libx264 (CPU) & 83,33 & 6 & 1483,16 & 10,60 & 99,29\ \% \\
@@ -280,7 +280,7 @@ libvpx-vp9 (CPU) & 4,10 & 122 & 1483,16 & 88,41 & 94,04\ \% \\
 \caption{Srovnání výkonnosti kodérů (vstup: 500 snímků, 1080p50, sekvence park\_joy).}
 \begin{tabular}{|l|c|r|r|r|c|}
 \hline
-\textbf{Kodér} & \textbf{\hyperref[sec:odvozene_metriky]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
+\textbf{Kodér} & \textbf{\hyperref[sec:derived_metrics]{FPS}} & \textbf{Čas [s]} & \textbf{Původní [MB]} & \textbf{Komprim. [MB]} & \textbf{Úspora} \\
 \hline
 hevc\_videotoolbox (HW) & 166,67 & 3 & 1483,16 & 215,85 & 85,45\ \% \\
 libx264 (CPU) & 71,43 & 7 & 1483,16 & 41,92 & 97,17\ \% \\
@@ -292,37 +292,37 @@ libvpx-vp9 (CPU) & 4,72 & 106 & 1483,16 & 154,42 & 89,59\ \% \\
 \end{table}
 
 \newpage
-\subsection*{Časová stabilita kvality (\hyperref[sec:metriky]{VMAF} v čase)}
+\subsection*{Časová stabilita kvality (\hyperref[sec:metrics]{VMAF} v čase)}
 Zbývající grafy ukazují stabilitu vizuální kvality snímek po snímku při nastavení CRF 34 (CPU) a Q 66 (HW). Tyto grafy umožňují identifikovat propady kvality v náročných pasážích videí.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{per_frame_vmaf_old_town_cross_1080p50.pdf}
-    \caption{Časový průběh \hyperref[sec:metriky]{VMAF}: old\_town\_cross\_1080p50.}
+    \caption{Časový průběh \hyperref[sec:metrics]{VMAF}: old\_town\_cross\_1080p50.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{per_frame_vmaf_park_joy_1080p50.pdf}
-    \caption{Časový průběh \hyperref[sec:metriky]{VMAF}: park\_joy\_1080p50.}
+    \caption{Časový průběh \hyperref[sec:metrics]{VMAF}: park\_joy\_1080p50.}
 \end{figure}
 
 \newpage
 \subsection*{R-D Křivky (Rate-Distortion)}
-Kompletní sada naměřených RD křivek pro metriky \hyperref[sec:metriky]{PSNR}, \hyperref[sec:metriky]{SSIM} a \hyperref[sec:metriky]{VMAF} pro zbývající sekvence.
+Kompletní sada naměřených RD křivek pro metriky \hyperref[sec:metrics]{PSNR}, \hyperref[sec:metrics]{SSIM} a \hyperref[sec:metrics]{VMAF} pro zbývající sekvence.
 
 \subsubsection*{Sekvence: crowd\_run\_1080p50}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{rd_psnr_crowd_run_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metriky]{PSNR}) pro sekvenci crowd\_run\_1080p50.}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{PSNR}) pro sekvenci crowd\_run\_1080p50.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{rd_ssim_crowd_run_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metriky]{SSIM}) pro sekvenci crowd\_run\_1080p50.}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{SSIM}) pro sekvenci crowd\_run\_1080p50.}
 \end{figure}
 
 \subsubsection*{Sekvence: park\_joy\_1080p50}
@@ -330,19 +330,19 @@ Kompletní sada naměřených RD křivek pro metriky \hyperref[sec:metriky]{PSNR
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{rd_psnr_park_joy_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metriky]{PSNR}) pro sekvenci park\_joy\_1080p50.}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{PSNR}) pro sekvenci park\_joy\_1080p50.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{rd_ssim_park_joy_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metriky]{SSIM}) pro sekvenci park\_joy\_1080p50.}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{SSIM}) pro sekvenci park\_joy\_1080p50.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{rd_vmaf_park_joy_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metriky]{VMAF}) pro sekvenci park\_joy\_1080p50.}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{VMAF}) pro sekvenci park\_joy\_1080p50.}
 \end{figure}
 
 \subsubsection*{Sekvence: old\_town\_cross\_1080p50}
@@ -350,19 +350,19 @@ Kompletní sada naměřených RD křivek pro metriky \hyperref[sec:metriky]{PSNR
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{rd_psnr_old_town_cross_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metriky]{PSNR}) pro sekvenci old\_town\_cross\_1080p50.}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{PSNR}) pro sekvenci old\_town\_cross\_1080p50.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{rd_ssim_old_town_cross_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metriky]{SSIM}) pro sekvenci old\_town\_cross\_1080p50.}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{SSIM}) pro sekvenci old\_town\_cross\_1080p50.}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{rd_vmaf_old_town_cross_1080p50.pdf}
-    \caption{R-D Křivka (\hyperref[sec:metriky]{VMAF}) pro sekvenci old\_town\_cross\_1080p50.}
+    \caption{R-D Křivka (\hyperref[sec:metrics]{VMAF}) pro sekvenci old\_town\_cross\_1080p50.}
 \end{figure}
 
 \end{document}
