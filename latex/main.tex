@@ -124,7 +124,7 @@ Smyslem práce není stanovit absolutní časy enkódování (které by se liši
 \subsection*{Specifikace testovacích videí}
 Jako referenční bod byla stažena nekomprimovaná videa z databáze Xiph.org \cite{xiphDerf}. Zvolené sekvence reprezentují náročné kompresní scénáře.
 \begin{itemize}
-    \item \textbf{Formát a prostor:} \hyperref[sec:slovnik]{Y4M} (YUV4MPEG2), bez komprese. Barevný prostor \hyperref[sec:slovnik]{YUV 4:2:0}, 8-bit.
+    \item \textbf{Formát a prostor:} \hyperref[sec:slovnik]{\hyperref[sec:slovnik]{Y4M}} (YUV4MPEG2), bez komprese. Barevný prostor \hyperref[sec:slovnik]{YUV 4:2:0}, 8-bit.
     \item \textbf{Rozlišení a frekvence:} 1920x1080 (Full HD) při 50 snímcích za sekundu (fps).
     \item \textbf{Objem dat a kompresní poměr:} Všechna referenční videa mají délku přibližně 10 sekund (500 snímků). Vzhledem k absenci komprese je jejich velikost na disku přesně identická, a to \textbf{1 555 203 036 bajtů} (cca 1483,15 MB).
     \item \textbf{Prostorová složitost:} Pro objektivní zhodnocení náročnosti jednotlivých scén byla změřena průměrná Shannonova entropie jasové složky (Y) všech snímků referenčních videí (viz Tabulka \ref{tab:entropy}). Tato hodnota indikuje míru prostorové redundance (\textit{Spatial Redundancy}) v sekvenci, kterou se kodéry snaží eliminovat \cite{lec_tech}.
@@ -211,7 +211,7 @@ Experimentálně se potvrdilo, že kompresní efektivita úzce souvisí se zvole
     \item[ASIC (Application-Specific Integrated Circuit):] Integrovaný obvod navržený přesně pro jeden specifický účel, nikoli pro obecné výpočty (jako centrální procesor).
     \item[Bitstream:] Souvislý sled bitů vytvořený procesem komprese (kodérem), který obsahuje data potřebná pro zpětnou rekonstrukci obrazu a zvuku.
     \item[CRF (Constant Rate Factor):] Režim kódování, který dynamicky alokuje více bitů do složitých scén a ubírá u scén statických za účelem udržení konstantní vizuální kvality.
-    \item[Y4M (YUV4MPEG2):] Jednoduchý souborový formát, který uchovává zcela nekomprimovaná obrazová data a doplňuje je o elementární hlavičku. 
+    \item[\hyperref[sec:slovnik]{Y4M} (YUV4MPEG2):] Jednoduchý souborový formát, který uchovává zcela nekomprimovaná obrazová data a doplňuje je o elementární hlavičku. 
     \item[YUV 4:2:0:] Barevný model separující jas (Y) od barvy (U, V). Podvzorkování 4:2:0 znamená redukci barevné informace na čtvrtinu vůči informaci jasové.
     \item[VOD (Video on Demand):] Služba umožňující uživatelům sledovat video obsah (filmy, seriály) podle vlastního výběru v libovolném čase, nikoliv podle fixního vysílacího schématu (např. Netflix, YouTube).
 \end{description}
@@ -360,6 +360,10 @@ Kompletní sada naměřených RD křivek pro metriky PSNR, SSIM a VMAF pro zbýv
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\textwidth]{rd_vmaf_old_town_cross_1080p50.pdf}
+    \caption{R-D Křivka (VMAF) pro sekvenci old\_town\_cross\_1080p50.}
+\end{figure}
+
+\end{document}width]{rd_vmaf_old_town_cross_1080p50.pdf}
     \caption{R-D Křivka (VMAF) pro sekvenci old\_town\_cross\_1080p50.}
 \end{figure}
 
